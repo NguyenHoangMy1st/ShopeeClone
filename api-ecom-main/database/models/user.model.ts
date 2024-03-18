@@ -7,14 +7,7 @@ const UserSchema = new Schema(
     name: { type: String, maxlength: 160 },
     password: { type: String, required: true, minlength: 6, maxlength: 160 },
     date_of_birth: { type: Date, maxlength: 160 },
-    addresses: [
-      {
-        street: { type: String },
-        city: { type: String },
-        postalCode: { type: String },
-        phone: { type: String },
-      },
-    ],
+    address: { type: String },
     phone: { type: String, maxlength: 20 },
     roles: { type: [String], required: true, default: [ROLE.USER] },
     avatar: { type: String, maxlength: 1000 },

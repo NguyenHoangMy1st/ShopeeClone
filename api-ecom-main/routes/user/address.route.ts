@@ -7,7 +7,7 @@ import { wrapAsync } from '../../utils/response'
 export const userAddressRouter = Router()
 
 userAddressRouter.post(
-  '/create',
+  '/:id',
   helpersMiddleware.entityValidator,
   authMiddleware.verifyAccessToken,
   wrapAsync(addressController.addShippingAddress)
