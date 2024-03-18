@@ -1,0 +1,22 @@
+[{
+  "_id": {
+    "$oid": "65e5a5bd2123c021475d4712"
+  },
+  "user": "65e59e382123c021475d46ee",
+  "product": "60acf0412fb5290258597298",
+  "buy_count": 1,
+  "price": 100,
+  "price_before_discount": 120,
+  "status": 1
+},
+{
+  "_id": {
+    "$oid": "65e5a60b2123c021475d4718"
+  },
+  "user": "65e59e382123c021475d46ee",
+  "product": "60acf0412fb5290258597298",
+  "buy_count": 1,
+  "price": 100,
+  "price_before_discount": 120,
+  "status": 2
+}]
