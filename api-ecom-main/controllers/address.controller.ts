@@ -6,7 +6,7 @@ import { ErrorHandler, responseSuccess } from '../utils/response'
 
 const addShippingAddress = async (req: Request, res: Response) => {
   const purchaseId = req.params.id as string
-  const { street, city, postalCode, phone } = req.body
+  const { street, city, postalCode, phone, paymentMethod } = req.body
 
   try {
     const purchase: any = await PurchaseModel.findById(purchaseId)
@@ -14,8 +14,14 @@ const addShippingAddress = async (req: Request, res: Response) => {
       throw new ErrorHandler(STATUS.NOT_FOUND, 'Purchase not found')
     }
 
-    // Thêm địa chỉ giao hàng cho đơn hàng
-    purchase.shippingAddress = { street, city, postalCode, phone }
+    const newAddress = {
+      street,
+      city,
+      postalCode,
+      phone,
+      paymentMethod,
+    }
+    purchase.shippingAddress.push(newAddress)
 
     await purchase.save()
 

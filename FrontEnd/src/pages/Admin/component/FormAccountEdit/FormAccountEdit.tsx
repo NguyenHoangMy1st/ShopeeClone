@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Form, Input, Modal, Select } from 'antd'
 import adminApi from 'src/apis/admin.api'
+import { toast } from 'react-toastify'
 
 const formItemLayout = {
   labelCol: {
@@ -16,9 +17,10 @@ const formItemLayout = {
 interface CollectionEditFormProps {
   userId: string
   onClose: () => void
+  onUpdateSuccess: () => void
 }
 
-const FormAccountEdit: React.FC<CollectionEditFormProps> = ({ userId, onClose }) => {
+const FormAccountEdit: React.FC<CollectionEditFormProps> = ({ userId, onClose, onUpdateSuccess }) => {
   const [form] = Form.useForm()
   const [userData, setUserData] = useState<any>(null)
 
@@ -38,24 +40,42 @@ const FormAccountEdit: React.FC<CollectionEditFormProps> = ({ userId, onClose })
     }
   }, [userId, form]) // Thêm form vào dependencies
 
+  const handleChange = (value: string) => {
+    setUserData((prevUserData: any) => ({
+      ...prevUserData,
+      roles: [value]
+    }))
+  }
+
   const handleSave = async () => {
     try {
       const values = await form.validateFields()
-      await adminApi.updateUser([userId], values)
+      await adminApi.updateUser([userId], { ...values, roles: userData.roles })
+      toast.success('Chỉnh sửa người dùng thành công', {
+        position: toast.POSITION.TOP_RIGHT, // Vị trí hiển thị thông báo
+        autoClose: 1200 // Thời gian tự động đóng thông báo sau 2000 mili giây (2 giây)
+      })
+      onUpdateSuccess() // Notify update success
       onClose()
     } catch (error) {
-      console.error('Error saving user data:', error)
+      toast.error('Chỉnh sủa người dùng thất bại', {
+        position: toast.POSITION.TOP_RIGHT, // Vị trí hiển thị thông báo
+        autoClose: 1200 // Thời gian tự động đóng thông báo sau 2000 mili giây (2 giây)
+      })
     }
   }
-  const handleChange = (value: string) => {
-    console.log(`selected ${value}`)
-  }
-
   return (
-    <Modal visible={!!userId} title='Edit User' onCancel={onClose} onOk={handleSave} destroyOnClose>
+    <Modal
+      visible={!!userId}
+      title='Edit User'
+      onCancel={onClose}
+      onOk={handleSave}
+      destroyOnClose
+      okButtonProps={{ style: { backgroundColor: '#be4734' } }}
+    >
       <Form {...formItemLayout} form={form} initialValues={userData}>
         <Form.Item label='Email' name='email'>
-          <Input style={{ width: '100%' }} />
+          <Input style={{ width: '100%' }} disabled />
         </Form.Item>
 
         <Form.Item label='Name' name='name'>
@@ -70,15 +90,15 @@ const FormAccountEdit: React.FC<CollectionEditFormProps> = ({ userId, onClose })
           <Input style={{ width: '100%' }} />
         </Form.Item>
 
-        <Form.Item label='Roles' name='roles'>
-          <Select
-            style={{ width: 120 }}
-            onChange={handleChange}
-            options={[
-              { value: 'Admin', label: 'Admin' },
-              { value: 'User', label: 'User' }
-            ]}
-          />
+        <Form.Item label='Roles' name={['roles']}>
+          <Select style={{ width: 120 }} onChange={handleChange}>
+            <Select.Option key='Admin' value='Admin'>
+              Admin
+            </Select.Option>
+            <Select.Option key='User' value='User'>
+              User
+            </Select.Option>
+          </Select>
         </Form.Item>
       </Form>
     </Modal>

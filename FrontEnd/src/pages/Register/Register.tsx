@@ -34,7 +34,9 @@ export default function Register() {
       onSuccess: (data) => {
         setIsAuthenticated(true)
         setProfile(data.data.data.user)
-        toast.success('Tài khoản đăng ký thành công!')
+        toast.success('Tài khoản đăng ký thành công!', {
+          autoClose: 1300 // Tự động đóng thông báo sau 2 giây
+        })
         navigate('/')
       },
       onError: (error) => {
@@ -49,7 +51,9 @@ export default function Register() {
             })
           }
         }
-        toast.error('Tài khoản đăng thất bại!')
+        toast.error('Tài khoản đăng thất bại!', {
+          autoClose: 1300 // Tự động đóng thông báo sau 2 giây
+        })
       }
     })
   })

@@ -35,7 +35,9 @@ export default function Login() {
       onSuccess: (data) => {
         setIsAuthenticated(true)
         setProfile(data.data.data.user)
-        toast.success('Đăng nhập thành công!')
+        toast.success('Đăng nhập thành công!', {
+          autoClose: 1300 // Tự động đóng thông báo sau 2 giây
+        })
         navigate('/')
       },
       onError: (error) => {
@@ -50,7 +52,9 @@ export default function Login() {
             })
           }
         }
-        toast.error('Đăng nhập thất bại!')
+        toast.error('Đăng nhập thất bại!', {
+          autoClose: 1300 // Tự động đóng thông báo sau 2 giây
+        })
       }
     })
   })

@@ -9,10 +9,25 @@ const PurchaseSchema = new Schema(
     price: { type: Number, default: 0 },
     price_before_discount: { type: Number, default: 0 },
     status: { type: Number, default: STATUS_PURCHASE.WAIT_FOR_CONFIRMATION },
-    shippingAddress: {},
+    shippingAddress: [
+      {
+        street: { type: String },
+        city: { type: String },
+        postalCode: { type: String },
+        phone: { type: String },
+        paymentMethod: { type: String, enum: ['cash', 'online'] },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 )
+declare global {
+  namespace Express {
+    interface Request {
+      purchase?: string
+    }
+  }
+}
 export const PurchaseModel = mongoose.model('purchases', PurchaseSchema)

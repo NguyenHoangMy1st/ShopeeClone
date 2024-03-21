@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from 'react-query'
 import React, { useContext, useEffect, useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import purchaseApi from 'src/apis/purchase.api'
 import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
@@ -15,6 +15,7 @@ import { AppContext } from 'src/contexts/app.context'
 import noproduct from 'src/assets/images/no-product.png'
 
 export default function Cart() {
+  const navigate = useNavigate()
   const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
@@ -138,7 +139,19 @@ export default function Cart() {
         product_id: purchase.product._id,
         buy_count: purchase.buy_count
       }))
-      buyProductsMutation.mutate(body)
+
+      buyProductsMutation.mutate(body, {
+        onSuccess: () => {
+          // Get the IDs of checked purchases
+          const checkedPurchaseIds = checkedPurchases.map((purchase) => purchase._id)
+
+          // Store checked purchase IDs in session storage
+          sessionStorage.setItem('checkedPurchaseIds', JSON.stringify(checkedPurchaseIds))
+
+          // Redirect to the payment page after successful purchase
+          navigate('/payment')
+        }
+      })
     }
   }
 

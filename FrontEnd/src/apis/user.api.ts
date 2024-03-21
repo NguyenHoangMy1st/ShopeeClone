@@ -6,7 +6,10 @@ interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createdAt' | '
   password?: string
   newPassword?: string
 }
-
+interface BodyForgetPassword extends Omit<User, '_id' | 'roles' | 'createdAt' | 'updatedAt'> {
+  password?: string
+  newPassword?: string
+}
 const userApi = {
   getProfile() {
     return http.get<SuccessResponse<User>>('me')
@@ -20,6 +23,9 @@ const userApi = {
         'Content-Type': 'multipart/form-data'
       }
     })
+  },
+  forgetPassword(body: BodyForgetPassword) {
+    return http.post<SuccessResponse<User>>('/forgotten', body)
   }
 }
 

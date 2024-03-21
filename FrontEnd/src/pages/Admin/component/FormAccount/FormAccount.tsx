@@ -1,21 +1,21 @@
-import { Space, Table, Tag } from 'antd'
+import { Modal, Space, Table, Tag, message } from 'antd'
 import type { TableProps } from 'antd'
 import { Link } from 'react-router-dom'
 import adminApi from 'src/apis/admin.api'
 import { useMutation, useQuery } from 'react-query'
 import { User } from 'src/types/user.type'
 import useQueryConfig from 'src/hooks/useQueryConfig'
-import { toast } from 'react-toastify'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FormAccountEdit from '../FormAccountEdit'
 
 function FormAccount() {
   const [editUserId, setEditUserId] = useState<string | null>(null) // State to store the ID of the user being edited
-
-  // Function to handle the "Edit" button click
+  const [shouldRefetch, setShouldRefetch] = useState<boolean>(false)
+  const [userData, setUserData] = useState<any>(null)
   const handleEdit = (userId: string) => {
     setEditUserId(userId) // Set the ID of the user being edited
   }
+
   const columns: TableProps<User>['columns'] = [
     {
       title: 'Email',
@@ -92,8 +92,26 @@ function FormAccount() {
       )
     }
   ]
-
   const queryConfig = useQueryConfig()
+  const fetchData = async () => {
+    try {
+      const userData = await adminApi.getAllUser()
+      setUserData(userData)
+    } catch (error) {
+      console.error('Error fetching data:', error)
+    }
+  }
+  useEffect(() => {
+    if (shouldRefetch) {
+      fetchData()
+      setShouldRefetch(false) // Đặt shouldRefetch lại sau khi fetchData đã được gọi
+    }
+  }, [shouldRefetch])
+
+  const handleUpdateSuccess = () => {
+    setShouldRefetch(true) // Trigger fetchData khi cập nhật thành công
+  }
+
   const { data: usersData, refetch } = useQuery({
     queryKey: ['users', queryConfig],
     queryFn: () => {
@@ -106,31 +124,75 @@ function FormAccount() {
       refetch()
     }
   })
-
   const handleDelete = (userId: string) => {
-    deleteUserMutation.mutate([userId])
-    toast.success('Xoá người dùng thành công')
-  }
+    Modal.confirm({
+      title: 'Xác nhận xoá',
+      content: 'Bạn có chắc chắn muốn xoá người dùng này?',
+      okText: 'Xoá',
+      cancelText: 'Hủy',
+      async onOk() {
+        try {
+          await deleteUserMutation.mutate([userId])
+          message.success('Xoá người dùng thành công')
+          refetch() // Refetch data after successful deletion
+        } catch (error) {
+          message.error('Xoá người dùng thất bại: ')
+        }
+      },
 
-  if (usersData) {
-    const data = usersData
+      okButtonProps: {
+        style: {
+          backgroundColor: '#b94545'
+        }
+      }
+    })
+  }
+  if (userData) {
     return (
       <>
         {/* Render the FormAccountEdit component if editUserId is not null */}
-        {editUserId !== null && <FormAccountEdit userId={editUserId} onClose={() => setEditUserId(null)} />}
-
-        {/* Render the table */}
-        {usersData && (
-          <Table
-            pagination={{
-              showSizeChanger: true,
-              pageSizeOptions: ['4', '8', '12'],
-              defaultPageSize: 4
-            }}
-            columns={columns}
-            dataSource={data.data.data}
+        {editUserId !== null && (
+          <FormAccountEdit
+            userId={editUserId}
+            onClose={() => setEditUserId(null)}
+            onUpdateSuccess={handleUpdateSuccess}
           />
         )}
+
+        {/* Render the table */}
+        <Table
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: ['4', '8', '12'],
+            defaultPageSize: 4
+          }}
+          columns={columns}
+          dataSource={userData.data.data}
+        />
+      </>
+    )
+  } else if (usersData) {
+    return (
+      <>
+        {/* Render the FormAccountEdit component if editUserId is not null */}
+        {editUserId !== null && (
+          <FormAccountEdit
+            userId={editUserId}
+            onClose={() => setEditUserId(null)}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
+        )}
+
+        {/* Render the table */}
+        <Table
+          pagination={{
+            showSizeChanger: true,
+            pageSizeOptions: ['4', '8', '12'],
+            defaultPageSize: 4
+          }}
+          columns={columns}
+          dataSource={usersData.data.data}
+        />
       </>
     )
   }
