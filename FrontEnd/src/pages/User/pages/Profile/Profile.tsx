@@ -93,7 +93,9 @@ export default function Profile() {
       setProfile(res.data.data)
       setProfileToLS(res.data.data)
       refetch()
-      toast.success(res.data.message)
+      toast.success(res.data.message, {
+        autoClose: 1300 // Hiển thị trong 1 giây
+      })
     } catch (error) {
       if (isAxiosUnprocessableEntityError<ErrorResponse<FormDataError>>(error)) {
         const formError = error.response?.data.data
@@ -108,7 +110,7 @@ export default function Profile() {
       }
     }
   })
-  console.log(avatar)
+  // console.log(avatar)
   const handleChangeFile = (file?: File) => {
     setFile(file)
   }

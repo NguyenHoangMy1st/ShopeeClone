@@ -1,3 +1,4 @@
+import { Purchase } from 'src/types/purchase.type'
 import { User } from 'src/types/user.type'
 import { SuccessResponse } from 'src/types/utils.type'
 import http from 'src/utils/http'
@@ -26,6 +27,12 @@ const userApi = {
   },
   forgetPassword(body: BodyForgetPassword) {
     return http.post<SuccessResponse<User>>('/forgotten', body)
+  },
+  shippingAddress(
+    purchaseIds: string[],
+    body: { street: string; city: string; postalCode: string; phone: string; paymentMethod: string }
+  ) {
+    return http.post<SuccessResponse<Purchase>>(`/address/${purchaseIds}`, body)
   }
 }
 

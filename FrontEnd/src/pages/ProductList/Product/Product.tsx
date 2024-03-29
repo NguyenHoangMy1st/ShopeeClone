@@ -4,10 +4,12 @@ import { Product as ProductType } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle, generateNameId } from 'src/utils/utils'
 import ProductRating from 'src/components/ProductRating'
 import path from 'src/constants/path'
+import { useTranslation } from 'react-i18next'
 interface Props {
   product: ProductType
 }
 export default function Product({ product }: Props) {
+  const { t } = useTranslation(['home'])
   return (
     <div>
       <Link to={`${path.home}${generateNameId({ name: product.name, id: product._id })}`}>
@@ -35,7 +37,7 @@ export default function Product({ product }: Props) {
               <ProductRating rating={product.rating} />
               <div className='ml-2 text-sm'>
                 <span>{formatNumberToSocialStyle(product.sold)}</span>
-                <span className='ml-1'>Đã bán</span>
+                <span className='ml-1'>{t('sold')}</span>
               </div>
             </div>
           </div>

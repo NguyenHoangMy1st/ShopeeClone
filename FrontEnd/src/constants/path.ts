@@ -13,6 +13,7 @@ const path = {
   productCategory: '/productCategory',
   cart: '/cart',
   payment: '/payment',
+  step: '/step',
   admin: '/admin',
   dashboard: '/admin/dashboard',
   accounts: '/admin/accounts',

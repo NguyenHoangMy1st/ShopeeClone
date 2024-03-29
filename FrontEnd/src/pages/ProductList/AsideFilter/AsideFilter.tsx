@@ -12,6 +12,7 @@ import { NoUndefinedField } from 'src/types/utils.type'
 import RatingStars from '../RatingStars'
 import { omit } from 'lodash'
 import { ObjectSchema } from 'yup'
+import { useTranslation } from 'react-i18next'
 // import InputV2 from 'src/components/InputV2'
 interface Props {
   queryConfig: QueryConfig
@@ -27,6 +28,7 @@ type FormData = NoUndefinedField<Pick<Schema, 'price_max' | 'price_min'>>
 const priceSchema = schema.pick(['price_min', 'price_max'])
 
 export default function AsideFilter({ queryConfig, categories }: Props) {
+  const { t } = useTranslation(['home'])
   const { category } = queryConfig
   const {
     control,
@@ -51,7 +53,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       }).toString()
     })
   })
-  console.log(categories)
+  // console.log(categories)
   const handleRemoveAll = () => {
     navigate({
       pathname: path.home,
@@ -80,7 +82,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             </g>
           </g>
         </svg>
-        Tất cả danh mục
+        {t('allcatelory')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4' />
       <ul>
@@ -129,11 +131,11 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </g>
         </svg>
-        Bộ lọc tìm kiếm
+        {t('loop')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='my-5'>
-        <div>Khoảng giá</div>
+        <div>{t('range')}</div>
         <form className='mt-2' onSubmit={onSubmit}>
           <div className='flex items-start'>
             <Controller
@@ -144,7 +146,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   <InputNumber
                     type='text'
                     className='grow'
-                    placeholder='₫ TỪ'
+                    placeholder={t('from')}
                     classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
                     classNameError='hidden'
                     {...field}
@@ -156,18 +158,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                 )
               }}
             />
-            {/* <InputV2
-              control={control}
-              name='price_min'
-              type='number'
-              className='grow'
-              placeholder='₫ TỪ'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
-              classNameError='hidden'
-              onChange={() => {
-                trigger('price_max')
-              }}
-            /> */}
+
             <div className='mx-2 mt-2 shrink-0'>-</div>
             <Controller
               control={control}
@@ -177,7 +168,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
                   <InputNumber
                     type='text'
                     className='grow'
-                    placeholder='₫ ĐẾN'
+                    placeholder={t('to')}
                     classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus:shadow-sm'
                     classNameError='hidden'
                     {...field}
@@ -192,19 +183,19 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
           </div>
           <div className='mt-1 min-h-[1.25rem] text-center text-sm text-red-600'>{errors.price_min?.message}</div>
           <Button className='w-full p-2 uppercase bg-gradient-to-b from-yellow to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'>
-            Áp dụng
+            {t('Apply')}
           </Button>
         </form>
       </div>
       <div className='bg-gray-300 h-[1px] my-4' />
-      <div className='text-sm'>Đánh giá</div>
+      <div className='text-sm'>{t('Evaluate')}</div>
       <RatingStars queryConfig={queryConfig} />
       <div className='bg-gray-300 h-[1px] my-4' />
       <Button
         onClick={handleRemoveAll}
         className=' w-full p-2 uppercase bg-gradient-to-b from-yellow to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'
       >
-        Xóa tất cả
+        {t('delete')}
       </Button>
     </div>
   )

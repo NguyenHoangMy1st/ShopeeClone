@@ -2,14 +2,11 @@ import React, { useState } from 'react'
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons'
 import { message, Upload } from 'antd'
 import type { GetProp, UploadProps } from 'antd'
+import { useMutation } from 'react-query'
+import { getAvatarUrl } from 'src/utils/utils'
+import adminApi from 'src/apis/admin.api'
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0]
-
-const getBase64 = (img: FileType, callback: (url: string) => void) => {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result as string))
-  reader.readAsDataURL(img)
-}
 
 const beforeUpload = (file: FileType) => {
   const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
@@ -22,23 +19,20 @@ const beforeUpload = (file: FileType) => {
   }
   return isJpgOrPng && isLt2M
 }
-
-const Uploadmain: React.FC = () => {
-  const [loading, setLoading] = useState(false)
+interface UploadmainProps {
+  onUpload: (data: any) => void
+}
+const Uploadmain: React.FC<UploadmainProps> = ({ onUpload }) => {
+  const [loading] = useState(false)
   const [imageUrl, setImageUrl] = useState<string>()
 
-  const handleChange: UploadProps['onChange'] = (info) => {
-    if (info.file.status === 'uploading') {
-      setLoading(true)
-      return
-    }
-    if (info.file.status === 'done') {
-      // Get this url from response in real world.
-      getBase64(info.file.originFileObj as FileType, (url) => {
-        setLoading(false)
-        setImageUrl(url)
-      })
-    }
+  const uploadImageMutaion = useMutation(adminApi.uploadImage)
+  const onChange: UploadProps['onChange'] = async (info: any) => {
+    const formData = new FormData()
+    formData.append('image', info.file.originFileObj || '')
+    const uploadRes = await uploadImageMutaion.mutateAsync(formData)
+    setImageUrl(getAvatarUrl(uploadRes.data.data))
+    onUpload(uploadRes.data.data)
   }
 
   const uploadButton = (
@@ -47,7 +41,30 @@ const Uploadmain: React.FC = () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </button>
   )
+  const customRequest = async ({ file, onSuccess, onError }: any) => {
+    const token = localStorage.getItem('profile')
+    const formData = new FormData()
+    formData.append('image', file)
 
+    try {
+      const response = await fetch('http://localhost:4000/admin/products/upload-image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const responseData = await response.json()
+      onSuccess(responseData, file)
+    } catch (error) {
+      onError(error)
+    }
+  }
   return (
     <>
       <Upload
@@ -55,9 +72,10 @@ const Uploadmain: React.FC = () => {
         listType='picture-card'
         className='avatar-uploader'
         showUploadList={false}
-        action='https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188'
+        action='http://localhost:4000/admin/products/upload-image'
+        customRequest={customRequest}
         beforeUpload={beforeUpload}
-        onChange={handleChange}
+        onChange={onChange}
       >
         {imageUrl ? <img src={imageUrl} alt='avatar' style={{ width: '100%' }} /> : uploadButton}
       </Upload>

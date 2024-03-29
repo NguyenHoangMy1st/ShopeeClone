@@ -14,26 +14,25 @@ import { purchasesStatus } from 'src/constants/purchase'
 
 import Product from '../ProductList/Product'
 import path from 'src/constants/path'
+import { useTranslation } from 'react-i18next'
 
-const content1 = (
-  <div className='w-72 h-36 px-5 py-2'>
-    <span>
-      Miễn phí Trả hàng trong 15 ngày nếu Đổi ý (hàng trả phải còn nguyên seal, tem, hộp sản phẩm), áp dụng cho một số
-      sản phẩm nhất định. Ngoài ra, tại thời điểm nhận hàng, bạn có thể đồng kiểm và được trả hàng miễn phí.
-    </span>
-  </div>
-)
-const content2 = (
-  <div className='w-72 h-30 px-5 py-2'>
-    <span>Nhận lại gấp đôi số tiền mà bạn đã thanh toán cho sản phẩm không chính hãng từ ZYMY Mall</span>
-  </div>
-)
-const content3 = (
-  <div className='w-72 h-30 px-5 py-2'>
-    <span>Ưu đãi miễn phí vận chuyển lên tới 40,000 VNĐ cho đơn hàng của ZYMY Mall từ 150,000 VNĐ</span>
-  </div>
-)
 const ProductDetail: React.FC = () => {
+  const { t } = useTranslation(['detail'])
+  const content1 = (
+    <div className='w-72 h-36 px-5 py-2'>
+      <span>{t('text1plus')}</span>
+    </div>
+  )
+  const content2 = (
+    <div className='w-72 h-30 px-5 py-2'>
+      <span>{t('text2plus')}</span>
+    </div>
+  )
+  const content3 = (
+    <div className='w-72 h-30 px-5 py-2'>
+      <span>{t('text3plus')}</span>
+    </div>
+  )
   const queryClient = useQueryClient()
   const { nameId } = useParams()
 
@@ -72,7 +71,7 @@ const ProductDetail: React.FC = () => {
   }, [product])
 
   const next = () => {
-    console.log(currentIndexImages[1])
+    // console.log(currentIndexImages[1])
     if (currentIndexImages[1] < (product as ProductType).images.length) {
       setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
     }
@@ -216,18 +215,19 @@ const ProductDetail: React.FC = () => {
                 <div className='mx-4 h-4 w-[1px] bg-gray-300'></div>
                 <div>
                   <span className='border-b border-b-gray-500'>{formatNumberToSocialStyle(product.sold)}</span>
-                  <span className='ml-1 text-gray-500 '>Đã bán</span>
+                  <span className='ml-1 text-gray-500 '>{t('sold')}</span>
                 </div>
               </div>
               <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
                 <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
                 <div className='ml-3 text-3xl font-medium text-rose-500'>₫{formatCurrency(product.price)}</div>
                 <div className='ml-4 rounded-sm bg-rose-500 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
-                  {rateSale(product.price_before_discount, product.price)} giảm
+                  {rateSale(product.price_before_discount, product.price)}
+                  {t('reduce')}
                 </div>
               </div>
               <div className='mt-8 flex items-center'>
-                <div className='capitalize text-gray-500'>Số lượng</div>
+                <div className='capitalize text-gray-500'> {t('Quantity')}</div>
                 <QuantityController
                   onDecrease={handleBuyCount}
                   onIncrease={handleBuyCount}
@@ -235,7 +235,9 @@ const ProductDetail: React.FC = () => {
                   value={buyCount}
                   max={product.quantity}
                 />
-                <div className='ml-6 text-sm text-gray-500'>{product.quantity} sản phẩm có sẵn</div>
+                <div className='ml-6 text-sm text-gray-500'>
+                  {product.quantity} {t('text')}
+                </div>
               </div>
               <div className='mt-8 flex items-center border-b pb-7 border-b-gray-200'>
                 <button
@@ -265,13 +267,13 @@ const ProductDetail: React.FC = () => {
                       <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1={9} x2={9} y1='8.5' y2='5.5' />
                     </g>
                   </svg>
-                  Thêm vào giỏ hàng
+                  {t('add')}
                 </button>
                 <button
                   onClick={buyNow}
                   className='fkex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-rose-400 px-5 capitalize text-white shadow-sm outline-none hover:bg-rose-400/90'
                 >
-                  Mua ngay
+                  {t('buy')}
                 </button>
               </div>
 
@@ -279,13 +281,13 @@ const ProductDetail: React.FC = () => {
                 <div className='flex text-rose-600 gap-1'>
                   <img src='mienphi.png' alt='' className='w-5 h-5' />
                   <Popover placement='bottom' content={content1}>
-                    <span className='text-gray-700'>Đổi ý miễn phí 15 ngày</span>
+                    <span className='text-gray-700'> {t('text1')}</span>
                   </Popover>
                 </div>
                 <div className='flex text-rose-600 gap-1'>
                   <img src='baomat.png' alt='' className='w-5 h-5' />
                   <Popover placement='bottom' content={content2}>
-                    <span className='text-gray-700'>Hàng chính hãng 100%</span>
+                    <span className='text-gray-700'>{t('text2')}</span>
                   </Popover>
                 </div>
                 <div className='flex text-rose-600 gap-1'>
@@ -301,7 +303,7 @@ const ProductDetail: React.FC = () => {
       </div>
       <div className='container'>
         <div className='mt-8 bg-white shadow mx-32 p-5'>
-          <div className='rounded bg-neutral-100 p-4 text-lg capitalize text-slate-700'>Mô tả sản phẩm</div>
+          <div className='rounded bg-neutral-100 p-4 text-lg capitalize text-slate-700'>{t('Describe')}</div>
           <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
             <div
               dangerouslySetInnerHTML={{
@@ -313,7 +315,7 @@ const ProductDetail: React.FC = () => {
       </div>
       <div className='container'>
         <div className='mt-8 bg-white shadow mx-32 p-5'>
-          <div className='uppercase text-gray-400'>CÓ THỂ BẠN CŨNG THÍCH</div>
+          <div className='uppercase text-gray-400'>{t('maybe')}</div>
           {productsData && (
             <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
               {productsData.data.data.products.map((product) => (

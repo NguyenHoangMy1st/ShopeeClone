@@ -28,7 +28,7 @@ const purchaseApi = {
     purchaseIds: string[],
     body: { street: string; city: string; postalCode: string; phone: string; paymentMethod: string }
   ) {
-    return http.post<SuccessResponse<Purchase>>(`/address/${purchaseIds}`, body)
+    return http.post<SuccessResponse<Purchase>>(`address/${purchaseIds}`, body)
   }
 }
 

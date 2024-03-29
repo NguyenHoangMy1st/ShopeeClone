@@ -13,7 +13,6 @@ import ProductDetail from './pages/ProductDetail'
 import ProductSearch from './pages/ProductList/ProductSearch'
 import Cart from './pages/Cart'
 import CartLayout from './layouts/CartLayout'
-import PaymentLayout from './layouts/PaymentLayout'
 import Payment from './pages/Payment'
 
 import UserLayout from './pages/User/layouts/UserLayout'
@@ -43,7 +42,7 @@ function RejectedRoute() {
 
 function AdminProtectedRoute() {
   const { isAuthenticated, user } = useContext(AppContext)
-  console.log(user)
+  // console.log(user)
   return isAuthenticated && user && user.roles.includes('Admin') ? <Outlet /> : <Navigate to='/login' />
 }
 
@@ -126,7 +125,6 @@ export default function UseRouterElement() {
     },
     {
       path: path.productSearch,
-      index: true,
       element: (
         <MainLayout>
           <ProductSearch />
@@ -152,11 +150,12 @@ export default function UseRouterElement() {
     {
       path: path.payment,
       element: (
-        <PaymentLayout>
-          <Payment />
-        </PaymentLayout>
+        <MainLayout>
+          <Payment></Payment>
+        </MainLayout>
       )
     },
+
     {
       path: '',
       element: <AdminProtectedRoute />,

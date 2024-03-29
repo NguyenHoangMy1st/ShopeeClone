@@ -1,4 +1,5 @@
 import { Category } from 'src/types/category.type'
+import { Order } from 'src/types/order.type'
 import { Product, ProductList } from 'src/types/product.type'
 import { User } from 'src/types/user.type'
 import { SuccessResponse } from 'src/types/utils.type'
@@ -45,11 +46,27 @@ const adminApi = {
     return http.post<SuccessResponse<Product[]>>('/admin/products', body)
   },
   uploadImage(body: any) {
-    return http.post<SuccessResponse<Product[]>>('/admin/products/upload-image', body, {
+    return http.post<SuccessResponse<string>>('/admin/products/upload-image', body, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
+  },
+  uploadImages(body: any) {
+    return http.post<SuccessResponse<string>>('/admin/products/upload-images', body, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+  },
+  getAllOrder() {
+    return http.get<SuccessResponse<Order[]>>('/admin/orders')
+  },
+  confirmaccept(id: string[]) {
+    return http.put<SuccessResponse<Order[]>>(`/admin/orders/${id}/confirm`)
+  },
+  confirmcancel(id: string[]) {
+    return http.put<SuccessResponse<Order[]>>(`/admin/orders/${id}/cancel`)
   }
 }
 

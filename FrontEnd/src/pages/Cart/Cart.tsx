@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from 'react-query'
-import React, { useContext, useEffect, useMemo } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import purchaseApi from 'src/apis/purchase.api'
 import Button from 'src/components/Button'
 import QuantityController from 'src/components/QuantityController'
@@ -10,13 +10,18 @@ import { Purchase } from 'src/types/purchase.type'
 import { formatCurrency, generateNameId } from 'src/utils/utils'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
-import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
 import noproduct from 'src/assets/images/no-product.png'
+import { Modal } from 'antd'
+import Payment from '../Payment'
+import { useTranslation } from 'react-i18next'
 
 export default function Cart() {
-  const navigate = useNavigate()
+  const { t } = useTranslation(['cart'])
   const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [shouldRefetch, setShouldRefetch] = useState(false)
+  const [dataAddress, setDataAddress] = useState([''])
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
@@ -29,12 +34,8 @@ export default function Cart() {
   })
   const buyProductsMutation = useMutation({
     mutationFn: purchaseApi.buyProducts,
-    onSuccess: (data) => {
-      refetch()
-      toast.success(data.data.message, {
-        position: 'top-center',
-        autoClose: 1000
-      })
+    onSuccess: (data: any) => {
+      setDataAddress(data.data.data)
     }
   })
   const deletePurchasesMutation = useMutation({
@@ -134,7 +135,9 @@ export default function Cart() {
   }
 
   const handleBuyPurchases = () => {
+    console.log('dataAddress', dataAddress)
     if (checkedPurchases.length > 0) {
+      setIsModalVisible(true)
       const body = checkedPurchases.map((purchase) => ({
         product_id: purchase.product._id,
         buy_count: purchase.buy_count
@@ -142,19 +145,22 @@ export default function Cart() {
 
       buyProductsMutation.mutate(body, {
         onSuccess: () => {
-          // Get the IDs of checked purchases
           const checkedPurchaseIds = checkedPurchases.map((purchase) => purchase._id)
-
-          // Store checked purchase IDs in session storage
-          sessionStorage.setItem('checkedPurchaseIds', JSON.stringify(checkedPurchaseIds))
-
-          // Redirect to the payment page after successful purchase
-          navigate('/payment')
+          localStorage.setItem('checkedPurchaseIds', JSON.stringify(checkedPurchaseIds))
         }
       })
     }
   }
+  useEffect(() => {
+    if (shouldRefetch) {
+      setShouldRefetch(false) // Đặt shouldRefetch lại sau khi fetchData đã được gọi
+    }
+  }, [shouldRefetch])
 
+  const handleCancel = () => {
+    setIsModalVisible(false)
+  }
+  // const id = dataAddress.length > 0 ? dataAddress[0]._id : ''
   return (
     <div className='bg-neutral-100 py-16 '>
       <div className='container mx-32 p-5'>
@@ -173,15 +179,15 @@ export default function Cart() {
                           onChange={handleCheckAll}
                         />
                       </div>
-                      <div className='flex-grow text-black'>Sản phẩm</div>
+                      <div className='flex-grow text-black'>{t('Product')}</div>
                     </div>
                   </div>
                   <div className='col-span-6'>
                     <div className='grid grid-cols-5 text-center'>
-                      <div className='col-span-2'>Đơn giá</div>
-                      <div className='col-span-1'>Số lượng</div>
-                      <div className='col-span-1'>Số tiền</div>
-                      <div className='col-span-1'>Thao tác</div>
+                      <div className='col-span-2'>{t('price')}</div>
+                      <div className='col-span-1'>{t('qauntity')}</div>
+                      <div className='col-span-1'>{t('total')}</div>
+                      <div className='col-span-1'>{t('action')}</div>
                     </div>
                   </div>
                 </div>
@@ -268,7 +274,7 @@ export default function Cart() {
                                 onClick={handleDelete(index)}
                                 className='bg-none text-black transition-colors hover:text-rose-400'
                               >
-                                Xóa
+                                {t('delete')}
                               </button>
                             </div>
                           </div>
@@ -290,21 +296,24 @@ export default function Cart() {
                   />
                 </div>
                 <button className='mx-3 border-none bg-none' onClick={handleCheckAll}>
-                  Chọn tất cả ({extendedPurchases.length})
+                  {t('all')}({extendedPurchases.length})
                 </button>
                 <button className='mx-3 border-none bg-none' onClick={handleDeleteManyPurchases}>
-                  Xóa
+                  {t('delete')}
                 </button>
               </div>
 
               <div className='mt-5 flex flex-col sm:ml-auto sm:mt-0 sm:flex-row sm:items-center'>
                 <div>
                   <div className='flex items-center sm:justify-end'>
-                    <div>Tổng thanh toán ({checkedPurchasesCount} sản phẩm):</div>
+                    <div>
+                      {' '}
+                      {t('payment')} ({checkedPurchasesCount} {t('products')}):
+                    </div>
                     <div className='ml-2 text-2xl text-rose-400'>₫{formatCurrency(totalCheckedPurchasePrice)}</div>
                   </div>
                   <div className='flex items-center text-sm sm:justify-end'>
-                    <div className='text-gray-500'>Tiết kiệm</div>
+                    <div className='text-gray-500'> {t('save')}</div>
                     <div className='ml-6 text-rose-400'>₫{formatCurrency(totalCheckedPurchaseSavingPrice)}</div>
                   </div>
                 </div>
@@ -313,8 +322,11 @@ export default function Cart() {
                   onClick={handleBuyPurchases}
                   disabled={buyProductsMutation.isLoading}
                 >
-                  Mua hàng
+                  {t('buy')}
                 </Button>
+                <Modal title='Thanh toán' open={isModalVisible} onCancel={handleCancel} footer={null}>
+                  <Payment /> {/* Thay thế bằng nội dung modal của bạn */}
+                </Modal>
               </div>
             </div>
           </>

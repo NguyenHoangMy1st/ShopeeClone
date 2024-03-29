@@ -16,9 +16,11 @@ import categoryApi from 'src/apis/category.api'
 import path from 'src/constants/path'
 import { ProductListConfig } from 'src/types/product.type'
 import ItemTop from './ItemTop'
+import { useTranslation } from 'react-i18next'
 
 export default function ProductList() {
   const queryConfig = useQueryConfig()
+  const { t } = useTranslation(['home'])
   const { data: productsData } = useQuery({
     queryKey: ['products', queryConfig],
     queryFn: () => {
@@ -52,7 +54,7 @@ export default function ProductList() {
         </div>
       </div>
       <div className='bg-white  my-10 mx-32'>
-        <div className='text-gray-400 uppercase pt-7 px-5 '>Danh mục</div>
+        <div className='text-gray-400 uppercase pt-7 px-5 '>{t('category')}</div>
         <div className=' grid grid-cols-8 py-5 '>
           <Link
             to={{
@@ -103,7 +105,7 @@ export default function ProductList() {
               pathname: path.productCategory,
               search: createSearchParams({
                 ...queryConfig,
-                category: '65ef3b9c04766a6306cc63b6'
+                category: '65ef3b9c04766a6306cc63b3'
               }).toString()
             }}
           >
@@ -114,18 +116,7 @@ export default function ProductList() {
               pathname: path.productCategory,
               search: createSearchParams({
                 ...queryConfig,
-                category: '65ef3bb004766a6306cc63b7'
-              }).toString()
-            }}
-          >
-            <ItemCategory img='son.png' name='Son'></ItemCategory>
-          </Link>
-          <Link
-            to={{
-              pathname: path.productCategory,
-              search: createSearchParams({
-                ...queryConfig,
-                category: '65ef3bb004766a6306cc63b8'
+                category: '65ef3bb004766a6306cc63b6'
               }).toString()
             }}
           >
@@ -136,7 +127,18 @@ export default function ProductList() {
               pathname: path.productCategory,
               search: createSearchParams({
                 ...queryConfig,
-                category: '65ef3bb004766a6306cc63b9'
+                category: '65ef3bde04766a6306cc63b9'
+              }).toString()
+            }}
+          >
+            <ItemCategory img='son.png' name='Son'></ItemCategory>
+          </Link>
+          <Link
+            to={{
+              pathname: path.productCategory,
+              search: createSearchParams({
+                ...queryConfig,
+                category: '65ef3bb004766a6306cc63b7'
               }).toString()
             }}
           >
@@ -154,7 +156,7 @@ export default function ProductList() {
       <div className='min-h-80 bg-white  my-10 mx-32 '>
         <div className='py-4 px-5 flex justify-between border-b-2 border-gray-100'>
           <div className=' text-orange-600 flex flex-row gap-1 '>
-            <div className='text-red-400 uppercase text-lg '>Tìm kiếm hàng đầu</div>
+            <div className='text-red-400 uppercase text-lg '>{t('look')}</div>
             <FaFireAlt className='text-2xl' />
           </div>
           <div className='flex flex-row gap-1 text-gray-400 items-center hover:text-gray-300 '>
@@ -166,7 +168,7 @@ export default function ProductList() {
                 }).toString()
               }}
             >
-              Xem thêm
+              {t('all')}
             </Link>
             <BsChevronRight />
           </div>
@@ -180,7 +182,7 @@ export default function ProductList() {
         )}
       </div>
       <div className='flex bg-white   mx-32 p-5 uppercase text-rose-500 font-bold border-b-4 border-rose-400 items-center justify-center'>
-        Gợi Ý Hôm Nay
+        {t('suggest')}
       </div>
       <div className='bg-white  my-2 mx-32 py-7 mb-10'>
         <div className='container'>

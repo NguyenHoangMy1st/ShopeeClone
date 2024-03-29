@@ -66,7 +66,7 @@ const FormAccountEdit: React.FC<CollectionEditFormProps> = ({ userId, onClose, o
   }
   return (
     <Modal
-      visible={!!userId}
+      open={!!userId}
       title='Edit User'
       onCancel={onClose}
       onOk={handleSave}

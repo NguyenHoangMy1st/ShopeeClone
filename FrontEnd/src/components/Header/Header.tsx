@@ -11,9 +11,11 @@ import logo from 'src/assets/images/logo.png'
 import { formatCurrency } from 'src/utils/utils'
 import NavHeader from '../NavHeader'
 import useSearchProducts from 'src/hooks/useSearchProducts'
+import { useTranslation } from 'react-i18next'
 
 const MAX_PURCHASES = 5
 export default function Header() {
+  const { t } = useTranslation(['login'])
   const { isAuthenticated } = useContext(AppContext)
   const { onSubmitSearch, register } = useSearchProducts()
   // Khi chúng ta chuyển trang thì Header chỉ bị re-render
@@ -47,7 +49,7 @@ export default function Header() {
                 type='text'
                 {...register('name')}
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
-                placeholder='Free Ship Đơn Từ 0Đ'
+                placeholder={t('textSearch')}
               />
               <button className='rounded-sm py-2 px-6 flex-shrink-0 bg-red-400 hover:opacity-90'>
                 <svg
@@ -73,7 +75,7 @@ export default function Header() {
                 <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
                   {purchasesInCart && purchasesInCart.length > 0 ? (
                     <div className='p-2'>
-                      <div className='capitalize text-gray-400'>Sản phẩm mới thêm</div>
+                      <div className='capitalize text-gray-400'>{t('new')}</div>
                       <div className='mt-5'>
                         {purchasesInCart.slice(0, MAX_PURCHASES).map((purchase) => (
                           <div className='mt-2 flex py-2 hover:bg-gray-100' key={purchase._id}>
@@ -95,21 +97,21 @@ export default function Header() {
                       </div>
                       <div className='mt-6 flex items-center justify-between'>
                         <div className='text-xs capitalize text-gray-500'>
-                          {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''} Thêm
-                          hàng vào giỏ
+                          {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''}{' '}
+                          {t('add')}
                         </div>
                         <Link
                           to={path.cart}
                           className='rounded-sm bg-rose-500 px-4 py-2 capitalize text-white hover:bg-opacity-90'
                         >
-                          Xem giỏ hàng
+                          {t('view')}
                         </Link>
                       </div>
                     </div>
                   ) : (
                     <div className='flex h-[300px] w-[300px] flex-col  items-center justify-center p-2'>
                       <img src={noproduct} alt='no purchase' className='h-24 w-24 ' />
-                      <div className='mt-3 capitalize'>Chưa có sản phẩm</div>
+                      <div className='mt-3 capitalize'> {t('noProduct')}</div>
                     </div>
                   )}
                 </div>

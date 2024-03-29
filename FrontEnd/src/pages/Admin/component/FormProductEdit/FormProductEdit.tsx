@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Image, Input, Modal, Select, Upload, message } from 'antd'
-import Uploadmain from '../Uploadmain'
-import Uploadimgs from '../Upload'
+import { Form, Image, Input, Modal, Select, Upload } from 'antd'
+
 import adminApi from 'src/apis/admin.api'
 import { toast } from 'react-toastify'
 import useQueryConfig from 'src/hooks/useQueryConfig'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
+
+import { getAvatarUrl } from 'src/utils/utils'
 
 const formItemLayout = {
   labelCol: {
@@ -29,7 +30,8 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
   const [form] = Form.useForm()
 
   const [productData, setProductData] = useState<any>(null)
-
+  const [initialCategoryValue, setInitialCategoryValue] = useState([''])
+  console.log(initialCategoryValue)
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -44,20 +46,20 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
     if (productId) {
       fetchUserData()
     }
-  }, [productId, form]) // Thêm form vào dependencies
+  }, [productId]) // Thêm form vào dependencies
 
   const handleSave = async () => {
     try {
       const values = await form.validateFields()
       await adminApi.updateProduct([productId], values)
-      toast.success('Chỉnh sửa người dùng thành công', {
+      toast.success('Chỉnh sửa sản phẩm thành công', {
         position: toast.POSITION.TOP_RIGHT, // Vị trí hiển thị thông báo
         autoClose: 1200 // Thời gian tự động đóng thông báo sau 2000 mili giây (2 giây)
       })
       onUpdateSuccess() // Notify update success
       onClose()
     } catch (error) {
-      toast.error('Chỉnh sủa người dùng thất bại', {
+      toast.error('Chỉnh sửa sản phẩm  thất bại', {
         position: toast.POSITION.TOP_RIGHT, // Vị trí hiển thị thông báo
         autoClose: 1200 // Thời gian tự động đóng thông báo sau 2000 mili giây (2 giây)
       })
@@ -71,37 +73,62 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
       return adminApi.getcategories()
     }
   })
-  // console.log(categoriesData)
+  const uploadImageMutaion = useMutation(adminApi.uploadImage)
+  // const uploadImagesMutaion = useMutation(adminApi.uploadImages)
+
   const image = productData?.data.image
-  const handleUploadChange = async (info) => {
-    const { status } = info.file
-    if (status === 'done') {
-      const formData = new FormData()
-      formData.append('image', info.file.originFileObj || '')
-      try {
-        const uploadRes = await adminApi.uploadImage(formData)
-        form.setFieldsValue(uploadRes.data.data)
-      } catch (error) {
-        handleUploadError(error)
+
+  const handleUploadChange = async (info: any) => {
+    const formData = new FormData()
+    formData.append('image', info.file.originFileObj || '')
+    const uploadRes = await uploadImageMutaion.mutateAsync(formData)
+    // console.log('hihi')
+    form.setFieldsValue({
+      image: uploadRes.data.data // Sử dụng đường dẫn của ảnh từ dữ liệu phản hồi
+    })
+    setProductData((prevProductData: any) => ({
+      ...prevProductData,
+      data: {
+        ...prevProductData.data,
+        image: getAvatarUrl(uploadRes.data.data)
       }
-    }
+    }))
   }
 
-  const handleUploadError = (error) => {
-    if (error.response && error.response.status === 401) {
-      // Token expired or unauthorized
-      // Clear token from local storage and redirect user to login page
-      localStorage.removeItem('accessToken')
-      // Redirect user to login page or perform other actions
-      message.error('Token expired. Please login again.')
-      // Example of redirecting user to login page
-      window.location.href = '/login'
-    } else {
-      // Other error handling
-      console.error('Error uploading image:', error)
-      message.error('An error occurred while uploading image.')
+  const customRequest = async ({ file, onSuccess, onError }: any) => {
+    const token = localStorage.getItem('profile')
+    const formData = new FormData()
+    formData.append('file', file)
+
+    try {
+      const response = await fetch('http://localhost:4000/admin/products/upload-image', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const responseData = await response.json()
+      onSuccess(responseData, file)
+    } catch (error) {
+      onError(error)
     }
   }
+  console.log(productData)
+
+  const images = productData?.data.images
+  useEffect(() => {
+    if (productData && productData.data && productData.data.category) {
+      const categoryName = productData.data.category.name
+      setInitialCategoryValue([categoryName])
+    }
+  }, [productData])
+
   return (
     <Modal
       open
@@ -112,6 +139,11 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
       destroyOnClose
       okText='Save'
       cancelText='Cancel'
+      okButtonProps={{
+        style: {
+          backgroundColor: '#b94545' // Đổi màu của nút Save thành màu đỏ
+        }
+      }}
     >
       <Form {...formItemLayout} form={form} initialValues={productData}>
         <div className='grid grid-cols-2 grid-flow-row  w-full'>
@@ -126,10 +158,14 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
           <Form.Item label='Số lượng' name='quantity'>
             <Input />
           </Form.Item>
-          <Form.Item label='Danh mục' name={['category', 'name']}>
+          <Form.Item
+            label='Danh mục'
+            name={['category']}
+            initialValue={categoriesData?.data.data.map((category) => category.name)}
+          >
             <Select style={{ width: 340 }}>
               {categoriesData?.data.data.map((category) => (
-                <Select.Option key={category._id} value={category.name}>
+                <Select.Option key={category._id} value={category._id}>
                   {category.name}
                 </Select.Option>
               ))}
@@ -139,14 +175,14 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
         <div className='grid grid-cols-2 grid-flow-row  w-full'>
           <Form.Item label='Ảnh chính' name='image' initialValue={image}>
             <Upload
-              action='
-              http://localhost:4000/admin/products/upload-image'
+              action='http://localhost:4000/admin/products/upload-image'
+              customRequest={customRequest} // Sử dụng customRequest để tải ảnh lên
               listType='picture-card'
               maxCount={1}
               fileList={image ? [{ uid: '-1', name: 'image.png', url: image }] : []}
               onRemove={() => {
-                // Set image to null when the remove button is clicked
-                setProductData((prevProductData) => ({
+                // Xóa ảnh khỏi fileList khi người dùng nhấn nút xóa
+                setProductData((prevProductData: any) => ({
                   ...prevProductData,
                   data: {
                     ...prevProductData.data,
@@ -160,13 +196,20 @@ const FormProductEdit: React.FC<CollectionCreateFormProps> = ({ productId, onClo
             </Upload>
           </Form.Item>
 
-          <Form.Item label='Ảnh minh họa' name='images'>
-            <Uploadimgs />
+          <Form.Item label='Ảnh minh họa' name='images' initialValue={images}>
+            <div className='flex flex-wrap -mx-4'>
+              {images &&
+                images.map((imageUrl: any, index: any) => (
+                  <div key={index} className='w-1/4 px-4 mb-4'>
+                    <Image src={imageUrl} alt={`Image ${index + 1}`} className='w-full h-auto' />
+                  </div>
+                ))}
+            </div>
           </Form.Item>
         </div>
 
-        <Form.Item label='Mô tả sản phẩm' name='description'>
-          <Input.TextArea style={{ width: '1000' }} />
+        <Form.Item label='Mô tả sản phẩm' name='description' className=''>
+          <Input.TextArea style={{ width: '100%', height: '200px' }} className=' resize-none' />
         </Form.Item>
       </Form>
     </Modal>
