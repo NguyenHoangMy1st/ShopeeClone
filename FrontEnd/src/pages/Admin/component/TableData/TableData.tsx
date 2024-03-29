@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import path from 'src/constants/path'
 import { generateNameId } from 'src/utils/utils'
 // import { toast } from 'react-toastify'
-type OnChange = NonNullable<TableProps<DataType>['onChange']>
+type OnChange = NonNullable<TableProps<any>['onChange']>
 type Filters = Parameters<OnChange>[1]
 
 function TableData({ shouldRefetch }: { shouldRefetch: boolean }) {
@@ -23,7 +23,7 @@ function TableData({ shouldRefetch }: { shouldRefetch: boolean }) {
   const handleEdit = (productId: string) => {
     setEditProductId(productId) // Set the ID of the user being edited
   }
-  const categoryName = filteredInfo?.category?.name
+  const categoryName = (filteredInfo?.category as any)?.name
 
   const queryConfig = useQueryConfig()
   const { data: productsData, refetch } = useQuery({
