@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-const ProductSchema = new Schema(
+const DeletedProductSchema = new Schema(
   {
     name: { type: String, required: true, maxlength: 160 },
     image: { type: String, required: true, maxlength: 1000 },
@@ -21,4 +21,7 @@ const ProductSchema = new Schema(
     timestamps: true,
   }
 )
-export const ProductModel = mongoose.model('products', ProductSchema)
+export const DeletedProductModel = mongoose.model(
+  'deletedproducts',
+  DeletedProductSchema
+)

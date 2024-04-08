@@ -4,10 +4,13 @@ interface Product {
   images: string[]
   description: string
   category: string[]
+  brand?: string
+  rating: number
   price: number
   price_before_discount: number
   quantity: number
-  rating: number
+  stockQuantity: number
   view: number
   sold: number
+  status?: string
 }

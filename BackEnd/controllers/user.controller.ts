@@ -8,6 +8,17 @@ import { uploadFile } from '../utils/upload'
 import { FOLDERS, ROUTE_IMAGE } from '../constants/config'
 import { ParamsDictionary } from 'express-serve-static-core'
 import forgottenPassword from '../services/userServices'
+import { ROLE } from '../constants/role.enum'
+
+// const generateRandomCode = (length: number) => {
+//   const characters =
+//     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+//   let result = ''
+//   for (let i = 0; i < length; i++) {
+//     result += characters.charAt(Math.floor(Math.random() * characters.length))
+//   }
+//   return result
+// }
 
 const addUser = async (req: Request, res: Response) => {
   const form: User = req.body
@@ -55,8 +66,67 @@ const addUser = async (req: Request, res: Response) => {
   throw new ErrorHandler(422, { email: 'Email đã tồn tại' })
 }
 
+const addEmployee = async (req: Request, res: Response) => {
+  try {
+    const form: User = req.body
+    const { email, password, addresseses, date_of_birth, name, phone, avatar } =
+      form
+
+    // Tìm kiếm nhân viên có employeeCode lớn nhất
+    const lastEmployee = await UserModel.findOne(
+      {},
+      {},
+      { sort: { employeeCode: -1 } }
+    ).exec()
+    let lastEmployeeCode = 'NV000' // Mã nhân viên mặc định nếu không có nhân viên nào trong DB
+
+    if (lastEmployee && 'employeeCode' in lastEmployee) {
+      // Lấy mã nhân viên cuối cùng và tăng giá trị lên 1
+      const lastCode =
+        (lastEmployee as { employeeCode: string })?.employeeCode || 'NV000'
+
+      const nextCode = parseInt(lastCode.slice(2), 10) + 1 // Tăng giá trị lên 1
+      lastEmployeeCode = `NV${nextCode.toString().padStart(3, '0')}` // Format lại mã nhân viên theo định dạng NVXXX
+    }
+
+    const hashedPassword = hashValue(password)
+    const user = {
+      email,
+      password: hashedPassword,
+      roles: [ROLE.EMPLOYEE], // Set role to EMPLOYEE
+      employeeCode: lastEmployeeCode, // Gán employeeCode mới
+      addresseses,
+      date_of_birth,
+      name,
+      phone,
+      avatar,
+    }
+
+    Object.keys(user).forEach(
+      (key) =>
+        user[key as keyof typeof user] === undefined &&
+        delete user[key as keyof typeof user]
+    )
+
+    const userAdd = await new UserModel(user).save()
+    const response = {
+      message: 'Thêm nhân viên thành công',
+      data: userAdd.toObject({
+        transform: (doc, ret, option) => {
+          delete ret.password
+          delete ret.__v
+          return ret
+        },
+      }),
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    throw new ErrorHandler(422, { email: 'Email đã tồn tại' })
+  }
+}
+
 const getUsers = async (req: Request, res: Response) => {
-  const usersDB = await UserModel.find({})
+  const usersDB = await UserModel.find({ roles: ROLE.USER })
     .select({ password: 0, __v: 0 })
     .lean()
   const response = {
@@ -66,7 +136,17 @@ const getUsers = async (req: Request, res: Response) => {
 
   return responseSuccess(res, response)
 }
+const getEmployees = async (req: Request, res: Response) => {
+  const usersDB = await UserModel.find({ roles: ROLE.EMPLOYEE })
+    .select({ password: 0, __v: 0 })
+    .lean()
+  const response = {
+    message: 'Lấy nhân viên thành công',
+    data: usersDB,
+  }
 
+  return responseSuccess(res, response)
+}
 const getDetailMySelf = async (req: Request, res: Response) => {
   const userDB = await UserModel.findById(req.jwtDecoded.id)
     .select({ password: 0, __v: 0 })
@@ -99,8 +179,7 @@ const getUser = async (req: Request, res: Response) => {
 
 const updateUser = async (req: Request, res: Response) => {
   const form: User = req.body
-  const { password, address, date_of_birth, name, phone, roles, avatar } =
-    form
+  const { password, address, date_of_birth, name, phone, roles, avatar } = form
   const user = omitBy(
     {
       password,
@@ -232,7 +311,9 @@ const handleForgottenPassword = async (req: Request, res: Response) => {
 
 const userController = {
   addUser,
+  addEmployee,
   getUsers,
+  getEmployees,
   getDetailMySelf,
   getUser,
   updateUser,
