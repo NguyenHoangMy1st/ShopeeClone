@@ -18,13 +18,13 @@ const NavItem = ({ data }: NavItemProps) => {
     <div
       // onClick={() => setActiveNav(data.id)}
       className={`w-full flex items-center justify-start space-x-8 px-5 cursor-pointer
-       group hover:border-rose-500 border-l-4 border-transparent  `}
+       group hover:border-[#1CA7EC] border-l-4 border-transparent  `}
     >
       <NavLink
         to={data.link}
         className={({ isActive }) =>
           classNames(' flex items-center gap-5 w-full capitalize transition-colors', {
-            'text-rose-400': isActive,
+            'text-[#1CA7EC]': isActive,
             'text-gray-600': !isActive
           })
         }

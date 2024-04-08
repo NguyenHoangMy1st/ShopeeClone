@@ -3,7 +3,7 @@ import { STATUS_PURCHASE } from '../constants/purchase'
 import { STATUS } from '../constants/status'
 import { ProductModel } from '../database/models/product.model'
 import { PurchaseModel } from '../database/models/purchase.model'
-import { ErrorHandler, responseSuccess } from '../utils/response'
+import { ErrorHandler, responseError, responseSuccess } from '../utils/response'
 import { handleImageProduct } from './product.controller'
 import { cloneDeep } from 'lodash'
 
@@ -198,40 +198,48 @@ export const buyProducts = async (req: Request, res: Response) => {
   }
   return responseSuccess(res, response)
 }
-
 export const getPurchases = async (req: Request, res: Response) => {
-  const { status = STATUS_PURCHASE.ALL } = req.query
-  const user_id = req.jwtDecoded.id
+  const { status = STATUS_PURCHASE.ALL, user_id } = req.query
+
   let condition: any = {
     user: user_id,
     status: {
       $ne: STATUS_PURCHASE.ALL,
     },
   }
+
   if (Number(status) !== STATUS_PURCHASE.ALL) {
     condition.status = status
   }
 
-  let purchases: any = await PurchaseModel.find(condition)
-    .populate({
-      path: 'product',
-      populate: {
-        path: 'category',
-      },
+  try {
+    let purchases: any = await PurchaseModel.find(condition)
+      .populate({
+        path: 'product',
+        populate: {
+          path: 'category',
+        },
+      })
+      .sort({
+        createdAt: -1,
+      })
+      .lean()
+
+    // Handle image product
+    purchases = purchases.map((purchase: any) => {
+      purchase.product = handleImageProduct(cloneDeep(purchase.product))
+      return purchase
     })
-    .sort({
-      createdAt: -1,
-    })
-    .lean()
-  purchases = purchases.map((purchase) => {
-    purchase.product = handleImageProduct(cloneDeep(purchase.product))
-    return purchase
-  })
-  const response = {
-    message: 'Lấy đơn mua thành công',
-    data: purchases,
+
+    const response = {
+      message: 'Lấy đơn mua thành công',
+      data: purchases,
+    }
+
+    return responseSuccess(res, response)
+  } catch (error) {
+    return responseError(res, 'Lỗi khi lấy đơn mua')
   }
-  return responseSuccess(res, response)
 }
 
 export const deletePurchases = async (req: Request, res: Response) => {

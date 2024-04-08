@@ -26,7 +26,7 @@ export default function SwiperItemTop({ product }: Props) {
         </div>
       </Link>
       <div className='absolute top-0 left-0'>
-        <div className=' bg-gradient-to-b from-yellow to-rose-400 text-white  w-10 h-7 flex items-center justify-center rounded-br-lg'>
+        <div className=' bg-gradient-to-b from-[#4ADEDE] to-[#1CA7EC] text-white  w-10 h-7 flex items-center justify-center rounded-br-lg'>
           TOP
         </div>
       </div>

@@ -66,7 +66,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       <Link
         to={path.home}
         className={classNames('flex items-center font-bold', {
-          'text-rose-400': !category
+          'text-[#1CA7EC]': !category
         })}
       >
         <svg viewBox='0 0 12 10' className='w-3 h-4 mr-3 fill-current'>
@@ -182,7 +182,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
             />
           </div>
           <div className='mt-1 min-h-[1.25rem] text-center text-sm text-red-600'>{errors.price_min?.message}</div>
-          <Button className='w-full p-2 uppercase bg-gradient-to-b from-yellow to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'>
+          <Button className='w-full p-2 uppercase bg-gradient-to-b from-[#4ADEDE] to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'>
             {t('Apply')}
           </Button>
         </form>
@@ -193,7 +193,7 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       <div className='bg-gray-300 h-[1px] my-4' />
       <Button
         onClick={handleRemoveAll}
-        className=' w-full p-2 uppercase bg-gradient-to-b from-yellow to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'
+        className=' w-full p-2 uppercase bg-gradient-to-b from-[#4ADEDE] to-rose-400 text-white text-sm hover:opacity-70 flex justify-center items-center'
       >
         {t('delete')}
       </Button>

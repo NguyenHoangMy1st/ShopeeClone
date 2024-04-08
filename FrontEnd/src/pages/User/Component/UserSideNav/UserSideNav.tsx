@@ -39,7 +39,7 @@ export default function UserSideNav() {
           to={path.profile}
           className={({ isActive }) =>
             classNames('flex items-center capitalize  transition-colors', {
-              'text-rose-400': isActive,
+              'text-[#1CA7EC]': isActive,
               'text-gray-600': !isActive
             })
           }
@@ -53,7 +53,7 @@ export default function UserSideNav() {
           to={path.changePassword}
           className={({ isActive }) =>
             classNames('mt-4 flex items-center capitalize transition-colors', {
-              'text-rose-400': isActive,
+              'text-[#1CA7EC]': isActive,
               'text-gray-600': !isActive
             })
           }
@@ -67,7 +67,7 @@ export default function UserSideNav() {
           to={path.historyPurchase}
           className={({ isActive }) =>
             classNames('mt-4 flex items-center  capitalize transition-colors', {
-              'text-rose-400': isActive,
+              'text-[#1CA7EC]': isActive,
               'text-gray-600': !isActive
             })
           }

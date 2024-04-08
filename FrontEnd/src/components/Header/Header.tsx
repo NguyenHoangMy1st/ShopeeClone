@@ -32,15 +32,15 @@ export default function Header() {
   const purchasesInCart = purchasesInCartData?.data.data
 
   return (
-    <div className='pb-5 pt-2 bg-gradient-to-b from-yellow to-rose-400 text-white '>
+    <div className='pb-5 pt-2 bg-gradient-to-b from-[#1CA7EC] to-[#4ADEDE] text-white '>
       <div className='container mx-3'>
         <NavHeader />
-        <div className='grid grid-cols-12 gap-3 mt-4 items-end'>
+        <div className='grid grid-cols-12 gap-3 mt-4 items-center'>
           <Link to={path.home} className='col-span-2 ml-3'>
             <div className='flex text-4xl items-center justify-items-center gap-1 font-extrabold'>
               <img src={logo} alt='' className='w-12 h-12 items-center justify-items-center mr-2 rounded-full ' />
-              <span className='text-[#fcc0cdff]'>ZY</span>
-              <span className='text-[#f54290ff]'>MY </span>
+              <span className='text-[#38ddfa]'>ZY</span>
+              <span className='text-[#4245f5]'>MY </span>
             </div>
           </Link>
           <form className='col-span-9' onSubmit={onSubmitSearch}>
@@ -51,7 +51,7 @@ export default function Header() {
                 className='text-black px-3 py-2 flex-grow border-none outline-none bg-transparent'
                 placeholder={t('textSearch')}
               />
-              <button className='rounded-sm py-2 px-6 flex-shrink-0 bg-red-400 hover:opacity-90'>
+              <button className='rounded-sm py-2 px-6 flex-shrink-0 bg-[#1CA7EC] hover:opacity-90'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -69,7 +69,7 @@ export default function Header() {
               </button>
             </div>
           </form>
-          <div className='cols-span-1 justify-self-end'>
+          <div className='cols-span-1 flex justify-center'>
             <Popover
               renderPopover={
                 <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white text-sm shadow-md'>
@@ -90,7 +90,7 @@ export default function Header() {
                               <div className='truncate'>{purchase.product.name}</div>
                             </div>
                             <div className='ml-2 flex-shrink-0'>
-                              <span className='text-rose-400'>₫{formatCurrency(purchase.product.price)}</span>
+                              <span className='text-[#1CA7EC]'>₫{formatCurrency(purchase.product.price)}</span>
                             </div>
                           </div>
                         ))}
@@ -102,7 +102,7 @@ export default function Header() {
                         </div>
                         <Link
                           to={path.cart}
-                          className='rounded-sm bg-rose-500 px-4 py-2 capitalize text-white hover:bg-opacity-90'
+                          className='rounded-sm bg-[#1CA7EC] px-4 py-2 capitalize text-white hover:bg-opacity-90'
                         >
                           {t('view')}
                         </Link>

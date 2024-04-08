@@ -185,7 +185,7 @@ const FristForm: React.FC<CollectionCreateFormProps> = ({ onCreated }) => {
           }
         }}
       >
-        <Button type='primary' onClick={() => setOpen(true)} className='w-32 bg-rose-300'>
+        <Button type='primary' onClick={() => setOpen(true)} className='w-32 bg-[#1CA7EC]'>
           Add Product
         </Button>
       </ConfigProvider>

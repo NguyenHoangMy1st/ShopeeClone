@@ -54,7 +54,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           <div>{t('arrange')}</div>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize ', {
-              ' bg-gradient-to-b from-yellow to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.view),
+              ' bg-gradient-to-b from-[#4ADEDE] to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.view),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
             })}
             onClick={() => handleSort(sortBy.view)}
@@ -63,7 +63,9 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize ', {
-              ' bg-gradient-to-b from-yellow to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.createdAt),
+              ' bg-gradient-to-b from-[#4ADEDE] to-rose-400 text-white hover:opacity-70': isActiveSortBy(
+                sortBy.createdAt
+              ),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.createdAt)
             })}
             onClick={() => handleSort(sortBy.createdAt)}
@@ -72,7 +74,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <button
             className={classNames('h-8 px-4 text-center text-sm capitalize ', {
-              ' bg-gradient-to-b from-yellow to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.sold),
+              ' bg-gradient-to-b from-[#4ADEDE] to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.sold),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
             })}
             onClick={() => handleSort(sortBy.sold)}
@@ -81,7 +83,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <select
             className={classNames('h-8  px-4 text-left text-sm capitalize  outline-none ', {
-              ' bg-gradient-to-b from-yellow to-rose-400 text-white hover:opacity-70': isActiveSortBy(sortBy.price),
+              ' bg-gradient-to-b from-[#4ADEDE] to-[#1CA7EC] text-white hover:opacity-70': isActiveSortBy(sortBy.price),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
             })}
             value={order || ''}

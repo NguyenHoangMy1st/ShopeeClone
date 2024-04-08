@@ -3,11 +3,16 @@ import { STATUS_PURCHASE } from '../constants/purchase'
 import { handleImageProduct } from './product.controller'
 import { cloneDeep } from 'lodash'
 import { PurchaseModel } from '../database/models/purchase.model'
-import { ErrorHandler, responseSuccess } from '../utils/response'
+import { ErrorHandler, responseError, responseSuccess } from '../utils/response'
 import { STATUS } from '../constants/status'
 import { ProductModel } from '../database/models/product.model'
 import { UserModel } from '../database/models/user.model'
-
+import { Types } from 'mongoose'
+interface OrderData {
+  order?: any
+  errCode: number
+  errMessage: string
+}
 const getAllOrders = async (req: Request, res: Response) => {
   const { status = STATUS_PURCHASE.ALL } = req.query
   let condition: any = {
@@ -45,6 +50,49 @@ const getAllOrders = async (req: Request, res: Response) => {
     data: orders,
   }
   return responseSuccess(res, response)
+}
+const getOrderByIdAccount = async (req: Request, res: Response) => {
+  const { status = STATUS_PURCHASE.ALL, user_id } = req.query
+
+  let condition: any = {
+    user: user_id,
+    status: {
+      $ne: STATUS_PURCHASE.ALL,
+    },
+  }
+
+  if (Number(status) !== STATUS_PURCHASE.ALL) {
+    condition.status = status
+  }
+
+  try {
+    let purchases: any = await PurchaseModel.find(condition)
+      .populate({
+        path: 'product',
+        populate: {
+          path: 'category',
+        },
+      })
+      .sort({
+        createdAt: -1,
+      })
+      .lean()
+
+    // Handle image product
+    purchases = purchases.map((purchase: any) => {
+      purchase.product = handleImageProduct(cloneDeep(purchase.product))
+      return purchase
+    })
+
+    const response = {
+      message: 'Lấy đơn mua thành công',
+      data: purchases,
+    }
+
+    return responseSuccess(res, response)
+  } catch (error) {
+    return responseError(res, 'Lỗi khi lấy đơn mua')
+  }
 }
 
 const updateOrderConfirm = async (req: Request, res: Response) => {
@@ -97,5 +145,6 @@ const orderController = {
   getAllOrders,
   updateOrderConfirm,
   updateOrderCancel,
+  getOrderByIdAccount,
 }
 export default orderController

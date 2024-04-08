@@ -180,7 +180,7 @@ const ProductDetail: React.FC = () => {
                         alt={product.name}
                         className='absolute top-0 left-0 h-full w-full cursor-pointer bg-white object-cover'
                       />
-                      {isActive && <div className='absolute inset-0 border-2 border-rose-400' />}
+                      {isActive && <div className='absolute inset-0 border-2 border-[#1CA7EC]' />}
                     </div>
                   )
                 })}
@@ -220,8 +220,8 @@ const ProductDetail: React.FC = () => {
               </div>
               <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
                 <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
-                <div className='ml-3 text-3xl font-medium text-rose-500'>₫{formatCurrency(product.price)}</div>
-                <div className='ml-4 rounded-sm bg-rose-500 px-1 py-[2px] text-xs font-semibold uppercase text-white'>
+                <div className='ml-3 text-3xl font-medium text-[#1CA7EC]'>₫{formatCurrency(product.price)}</div>
+                <div className='ml-4 rounded-sm bg-[#1CA7EC] px-1 py-[2px] text-xs font-semibold uppercase text-white'>
                   {rateSale(product.price_before_discount, product.price)}
                   {t('reduce')}
                 </div>
@@ -242,14 +242,14 @@ const ProductDetail: React.FC = () => {
               <div className='mt-8 flex items-center border-b pb-7 border-b-gray-200'>
                 <button
                   onClick={addToCart}
-                  className='flex h-12 items-center justify-center rounded-sm border border-rose-400 bg-rose-400/10 px-5 capitalize text-rose-400 shadow-sm hover:bg-rose-400/5'
+                  className='flex h-12 items-center justify-center rounded-sm border border-[#1CA7EC] bg-[#1CA7EC]/10 px-5 capitalize text-[#1CA7EC] shadow-sm hover:bg-[#1CA7EC]/5'
                 >
                   <svg
                     enableBackground='new 0 0 15 15'
                     viewBox='0 0 15 15'
                     x={0}
                     y={0}
-                    className='mr-[10px] h-5 w-5 fill-current stroke-rose-400 text-rose-400'
+                    className='mr-[10px] h-5 w-5 fill-current stroke-[#1CA7EC] text-[#1CA7EC]'
                   >
                     <g>
                       <g>
@@ -271,26 +271,26 @@ const ProductDetail: React.FC = () => {
                 </button>
                 <button
                   onClick={buyNow}
-                  className='fkex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-rose-400 px-5 capitalize text-white shadow-sm outline-none hover:bg-rose-400/90'
+                  className='fkex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-[#1CA7EC] px-5 capitalize text-white shadow-sm outline-none hover:bg-rose-400/90'
                 >
                   {t('buy')}
                 </button>
               </div>
 
               <div className='pt-7 flex gap-5 justify-between'>
-                <div className='flex text-rose-600 gap-1'>
+                <div className='flex text-[#1CA7EC] gap-1'>
                   <img src='mienphi.png' alt='' className='w-5 h-5' />
                   <Popover placement='bottom' content={content1}>
                     <span className='text-gray-700'> {t('text1')}</span>
                   </Popover>
                 </div>
-                <div className='flex text-rose-600 gap-1'>
+                <div className='flex text-[#1CA7EC] gap-1'>
                   <img src='baomat.png' alt='' className='w-5 h-5' />
                   <Popover placement='bottom' content={content2}>
                     <span className='text-gray-700'>{t('text2')}</span>
                   </Popover>
                 </div>
-                <div className='flex text-rose-600 gap-1'>
+                <div className='flex text-[#1CA7EC] gap-1'>
                   <img src='vanchuyen.png' alt='' className='w-5 h-5' />
                   <Popover placement='bottom' content={content3}>
                     <span className='text-gray-700'>Miễn phí vận chuyển</span>

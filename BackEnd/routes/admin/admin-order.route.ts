@@ -65,4 +65,17 @@ adminOrderRouter.put(
   // helpersMiddleware.idValidator,
   wrapAsync(orderController.updateOrderCancel)
 )
+
+adminOrderRouter.get(
+  '/order_by_user',
+  authMiddleware.verifyAccessToken,
+  authMiddleware.verifyAdmin,
+  wrapAsync(orderController.getOrderByIdAccount)
+)
+// adminOrderRouter.get(
+//   '/users-with-purchase',
+//   authMiddleware.verifyAccessToken,
+//   authMiddleware.verifyAdmin,
+//   wrapAsync(orderController.getUsersWithPurchase)
+// )
 export default adminOrderRouter

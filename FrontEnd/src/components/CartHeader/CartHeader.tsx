@@ -9,12 +9,12 @@ export default function CartHeader() {
   const { t } = useTranslation(['cart'])
   return (
     <div className='border-b border-b-black/10'>
-      <div className=' bg-gradient-to-b from-yellow to-rose-400 text-white'>
+      <div className=' bg-gradient-to-b from-[#4ADEDE] to-[#1CA7EC] text-white'>
         <div className='container'>
           <NavHeader />
         </div>
       </div>
-      <div className=' bg-white text-rose-400 py-6'>
+      <div className=' bg-white text-[#1CA7EC] py-6'>
         <div className='container'>
           <nav className='md:flex md:items-center md:justify-between'>
             <Link to={path.home} className='col-span-2 ml-3 flex items-center'>
@@ -23,18 +23,18 @@ export default function CartHeader() {
                 <span className='text-[#fcc0cdff]'>ZY</span>
                 <span className='text-[#f54290ff]'>MY </span>
               </div>
-              <div className='mx-4 h-6 w-[1px] bg-rose-400 md:h-8' />
-              <div className='capitalize text-rose-400 md:text-xl'>{t('cart')}</div>
+              <div className='mx-4 h-6 w-[1px] bg-[#1CA7EC] md:h-8' />
+              <div className='capitalize text-[#1CA7EC] md:text-xl'>{t('cart')}</div>
             </Link>
             <form className='mt-3 md:mt-0 md:w-[50%]' onSubmit={onSubmitSearch}>
-              <div className='flex rounded-sm border-2 border-rose-400'>
+              <div className='flex rounded-sm border-2 border-[#1CA7EC]'>
                 <input
                   type='text'
                   className='w-full flex-grow border-none bg-transparent px-3 py-1 text-black outline-none'
                   placeholder={t('text')}
                   {...register('name')}
                 />
-                <button className='flex-shrink-0 rounded-sm bg-rose-400 py-2 px-8 hover:opacity-90'>
+                <button className='flex-shrink-0 rounded-sm bg-[#1CA7EC] py-2 px-8 hover:opacity-90'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
                     fill='none'

@@ -1,31 +1,139 @@
+import { Link } from 'react-router-dom'
+import { FaTwitter, FaFacebookF } from 'react-icons/fa'
+import { IoLogoGoogle } from 'react-icons/io'
+import { PiInstagramLogoBold } from 'react-icons/pi'
+import { IoLogoYoutube } from 'react-icons/io5'
 export default function Footer() {
   return (
-    <footer className='bg-pink_1 py-16 px-20'>
-      <div className='container'>
-        <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
-          <div className='lg:col-span-1'>
-            <div>© 2023 Shopee. Tất cả các quyền được bảo lưu.</div>
-          </div>
-          <div className='lg:col-span-2'>
-            <div>
-              Quốc gia & Khu vực: Singapore | Indonesia | Đài Loan | Thái Lan | Malaysia | Việt Nam | Philippines |
-              Brazil | México |Colombia | Chile | Poland
+    <footer className='bg-gradient-to-r from-[#4ADEDE] to-[#1CA7EC] bg-center bg-no-repeat bg-cover'>
+      <div className='grid place-items-center py-9 font'>
+        <div className='p-[20px] mx-auto'>
+          <div className='flex gap-12 text-black'>
+            <div className='flex-grow-1 '>
+              <div className=' mb-6'>
+                <Link to='/' className='logo-wrapper'>
+                  <img
+                    src='//bizweb.dktcdn.net/100/336/334/themes/939194/assets/logo_footer.png?1706112573342'
+                    alt='logo'
+                  />
+                </Link>
+              </div>
+              <div className='mb-6'>
+                <h4 className='font-medium '>
+                  <span>
+                    Shop mỹ phẩm Cool Beauty
+                    <br />
+                    Làm đẹp trở nên dễ dàng hơn
+                  </span>
+                </h4>
+                <div className='mt-3'>
+                  <ul className='flex flex-col gap-3'>
+                    <li>Địa chỉ:Phường Hòa Minh,Quận Liên Chiểu,T.Phố Đà Nẵng</li>
+                    <li>
+                      Hotline:{' '}
+                      <Link className='hai01' to='tel:19006750'>
+                        1900 6750
+                      </Link>
+                    </li>
+                    <li>
+                      Email: <a href='mailto:coolteam@gmail.com'>coolteam@gmail.com</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div className='flex-grow-1'>
+              <div className='flex  gap-2 text-black'>
+                <div className=''>
+                  <h4 className='font-semibold'>
+                    <Link to='/' className='uppercase '>
+                      Hỗ trợ khách hàng
+                    </Link>
+                  </h4>
+                  <div className=' text-black mt-4' id='collapseListMenu01'>
+                    <ul className='flex flex-col gap-3 text-white '>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/'>Trang chủ</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/gioi-thieu'>Giới thiệu</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/collections/all'>Sản phẩm</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/san-pham-hot'>Khuyến mãi hot</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/tin-tuc'>Tin tức</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/lien-he'>Liên hệ</Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='flex-grow-1'>
+              <div className='flex gap-2 text-black'>
+                <div className=''>
+                  <h4 className='uppercase mb-4 font-semibold'>
+                    <Link to='/'>Chính sách</Link>
+                  </h4>
+                  <div className='text-white' id='collapseListMenu02'>
+                    <ul className='flex flex-col gap-3 text-white'>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/collections/all'>Chính sách đổi trả</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/san-pham-hot'>Chính sách vận chuyển</Link>
+                      </li>
+                      <li className='li_menu hover:text-gray-200'>
+                        <Link to='/tin-tuc'>Chính sách bảo mật</Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className='flex-grow-1'>
+              <div className='flex flex-col gap-4'>
+                <div className='flex flex-col gap-5'>
+                  <h4 className='uppercase font-semibold '> Kết nối với chúng tôi</h4>
+                  <div className='flex gap-4 text-white text-3xl '>
+                    <Link to='/'>
+                      <FaFacebookF className='hover:bg-rose-300 border rounded-full border-white p-[6px]' />
+                    </Link>
+                    <Link to='/'>
+                      <FaTwitter className='hover:bg-rose-300 border rounded-full border-white p-[6px]' />
+                    </Link>
+                    <Link to='/'>
+                      <IoLogoGoogle className='hover:bg-rose-300 border rounded-full border-white p-[6px]' />
+                    </Link>
+                    <Link to='/'>
+                      <PiInstagramLogoBold className='hover:bg-rose-300 border rounded-full border-white p-[6px]' />
+                    </Link>
+                    <Link to='/'>
+                      <IoLogoYoutube className='hover:bg-rose-300 border rounded-full border-white p-[6px]' />
+                    </Link>
+                  </div>
+                </div>
+                <div className='flex flex-col gap-5 mt-5 '>
+                  <h4 className='uppercase font-semibold '> Phương thức thanh toán</h4>
+                  <div className=''>
+                    <Link to='/'>
+                      <img
+                        src='https://bizweb.dktcdn.net/100/336/334/themes/939194/assets/i_payment.png?1706112573342'
+                        alt=''
+                        className='w-[230px] h-[65px] ml-[-14px]'
+                      />
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div className='mt-10 text-center text-sm'>
-          <div>Công ty TNHH Shopee</div>
-          <div className='mt-6'>
-            Địa chỉ: Tầng 4-5-6, Tòa nhà Capital Place, số 29 đường Liễu Giai, Phường Ngọc Khánh, Quận Ba Đình, Thành
-            phố Hà Nội, Việt Nam. Tổng đài hỗ trợ: 19001221 - Email: cskh@hotro.shopee.vn
-          </div>
-          <div className='mt-2'>
-            Chịu Trách Nhiệm Quản Lý Nội Dung: Nguyễn Đức Trí - Điện thoại liên hệ: 024 73081221 (ext 4678)
-          </div>
-          <div className='mt-2'>
-            Mã số doanh nghiệp: 0106773786 do Sở Kế hoạch & Đầu tư TP Hà Nội cấp lần đầu ngày 10/02/2015
-          </div>
-          <div className='mt-2'>© 2015 - Bản quyền thuộc về Công ty TNHH Shopee</div>
         </div>
       </div>
     </footer>

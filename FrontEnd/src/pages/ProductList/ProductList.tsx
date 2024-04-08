@@ -155,8 +155,8 @@ export default function ProductList() {
       </div>
       <div className='min-h-80 bg-white  my-10 mx-32 '>
         <div className='py-4 px-5 flex justify-between border-b-2 border-gray-100'>
-          <div className=' text-orange-600 flex flex-row gap-1 '>
-            <div className='text-red-400 uppercase text-lg '>{t('look')}</div>
+          <div className=' text-[#00a7fa] flex flex-row gap-1 '>
+            <div className='text-[#1CA7EC] uppercase text-lg '>{t('look')}</div>
             <FaFireAlt className='text-2xl' />
           </div>
           <div className='flex flex-row gap-1 text-gray-400 items-center hover:text-gray-300 '>
@@ -181,7 +181,7 @@ export default function ProductList() {
           </div>
         )}
       </div>
-      <div className='flex bg-white   mx-32 p-5 uppercase text-rose-500 font-bold border-b-4 border-rose-400 items-center justify-center'>
+      <div className='flex bg-white   mx-32 p-5 uppercase text-[#1CA7EC] font-bold border-b-4 border-rose-400 items-center justify-center'>
         {t('suggest')}
       </div>
       <div className='bg-white  my-2 mx-32 py-7 mb-10'>

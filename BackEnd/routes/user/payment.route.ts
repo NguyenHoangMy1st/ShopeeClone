@@ -7,8 +7,8 @@ import { wrapAsync } from '../../utils/response'
 
 export const userPaymentRouter = Router()
 
-userPaymentRouter.post(
-  '/:id',
+userPaymentRouter.get(
+  '/',
   helpersMiddleware.entityValidator,
   // purchaseMiddleware.identifyPurchase,
   authMiddleware.verifyAccessToken,
