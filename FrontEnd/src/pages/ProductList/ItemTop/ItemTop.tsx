@@ -6,8 +6,8 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 
-import SwiperItemTop from '../SwiperItemTop'
 import { Product } from 'src/types/product.type'
+import SwiperItemTop from '../SwiperItemTop/SwiperItemTop'
 
 interface Props {
   data?: any

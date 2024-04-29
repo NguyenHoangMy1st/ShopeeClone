@@ -13,6 +13,8 @@ const ProductSchema = new Schema(
     price_before_discount: { type: Number, default: 0 },
     quantity: { type: Number, default: 0 },
     stockQuantity: { type: Number, default: 0 },
+    ingredient: [{ name: { type: String } }],
+    madeIn: { type: String },
     sold: { type: Number, default: 0 },
     view: { type: Number, default: 0 },
     status: { type: String },

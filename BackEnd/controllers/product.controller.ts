@@ -54,7 +54,9 @@ const addProduct = async (req: Request, res: Response) => {
       price_before_discount,
       quantity,
       stockQuantity,
+      ingredient,
       status,
+      madeIn,
     } = form
 
     const product = {
@@ -69,9 +71,11 @@ const addProduct = async (req: Request, res: Response) => {
       price_before_discount,
       quantity,
       stockQuantity: stockQuantity || 0, // Thiết lập giá trị mặc định cho stockQuantity
+      ingredient,
       sold: 0, // Giá trị mặc định cho sold
       view: 0, // Giá trị mặc định cho view
       status: status || 'active', // Giá trị mặc định cho status
+      madeIn,
     }
     const productAdd = await new ProductModel(product).save()
     const response = {
@@ -96,6 +100,7 @@ const getProducts = async (req: Request, res: Response) => {
     limit = 30,
     category,
     exclude,
+    brand,
     sort_by,
     order,
     rating_filter,
@@ -111,6 +116,9 @@ const getProducts = async (req: Request, res: Response) => {
   let condition: any = {}
   if (category) {
     condition.category = category
+  }
+  if (brand) {
+    condition.brand = brand
   }
   if (exclude) {
     condition._id = { $ne: exclude }
@@ -140,6 +148,7 @@ const getProducts = async (req: Request, res: Response) => {
       $options: 'i',
     }
   }
+  console.log(condition)
   let [products, totalProducts]: [products: any, totalProducts: any] =
     await Promise.all([
       ProductModel.find(condition)
@@ -221,7 +230,9 @@ const updateProduct = async (req: Request, res: Response) => {
     price_before_discount,
     quantity,
     stockQuantity,
+    ingredient,
     status,
+    madeIn,
   } = form
   const product = omitBy(
     {
@@ -234,7 +245,9 @@ const updateProduct = async (req: Request, res: Response) => {
       price_before_discount,
       quantity,
       stockQuantity,
+      ingredient,
       status,
+      madeIn,
     },
     (value) => value === undefined || value === ''
   )

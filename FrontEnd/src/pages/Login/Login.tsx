@@ -22,7 +22,7 @@ export default function Login() {
   const { t } = useTranslation(['login'])
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
-
+  
   const {
     register,
     handleSubmit,
