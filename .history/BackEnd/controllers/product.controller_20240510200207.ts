@@ -331,15 +331,15 @@ const deleteQuantityProducts = async (req: Request, res: Response) => {
 const getDeletedProduct = async (req: Request, res: Response) => {
   try {
     // Lấy tất cả các sản phẩm đã xóa
-    // const deletedProducts = await DeletedProductModel.find().lean()
+    const deletedProducts = await DeletedProductModel.find().lean()
 
     // Xử lý các sản phẩm và trả về phản hồi thành công
-    // const processedProducts = deletedProducts.map((product) =>
-    //   handleImageProduct(product)
-    // )
+    const processedProducts = deletedProducts.map((product) =>
+      handleImageProduct(product)
+    )
     return responseSuccess(res, {
       message: 'Lấy tất cả sản phẩm đã xóa thành công',
-      // data: processedProducts,
+      data: processedProducts,
     })
   } catch (error) {
     // Trả về phản hồi lỗi nếu có lỗi xảy ra

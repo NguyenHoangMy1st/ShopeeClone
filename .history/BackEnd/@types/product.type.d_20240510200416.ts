@@ -18,5 +18,5 @@ interface Product {
 }
 interface Ingredient {
   name: string
-  amout: string
+  
 }

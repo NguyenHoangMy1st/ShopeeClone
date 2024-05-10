@@ -10,6 +10,7 @@ import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '../constants/config'
 import fs from 'fs'
 import { omitBy } from 'lodash'
 import { ORDER, SORT_BY } from '../constants/product'
+import { DeletedProductModel } from '../database/models/deletedProduct.model'
 
 export const handleImageProduct = (product) => {
   if (product.image !== undefined && product.image !== '') {
@@ -280,8 +281,8 @@ const deleteProduct = async (req: Request, res: Response) => {
 
       productDB.quantity = 0
 
-      // const deletedProduct = new DeletedProductModel(productDB)
-      // await deletedProduct.save()
+      const deletedProduct = new DeletedProductModel(productDB)
+      await deletedProduct.save()
 
       // Xóa sản phẩm khỏi danh sách sản phẩm
       await ProductModel.findByIdAndDelete(product_id).lean()
@@ -290,7 +291,7 @@ const deleteProduct = async (req: Request, res: Response) => {
 
       return responseSuccess(res, {
         message: 'Xóa thành công',
-        // data: deletedProduct,
+        data: deletedProduct,
       })
     } else {
       throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy sản phẩm')
@@ -331,15 +332,15 @@ const deleteQuantityProducts = async (req: Request, res: Response) => {
 const getDeletedProduct = async (req: Request, res: Response) => {
   try {
     // Lấy tất cả các sản phẩm đã xóa
-    // const deletedProducts = await DeletedProductModel.find().lean()
+    const deletedProducts = await DeletedProductModel.find().lean()
 
     // Xử lý các sản phẩm và trả về phản hồi thành công
-    // const processedProducts = deletedProducts.map((product) =>
-    //   handleImageProduct(product)
-    // )
+    const processedProducts = deletedProducts.map((product) =>
+      handleImageProduct(product)
+    )
     return responseSuccess(res, {
       message: 'Lấy tất cả sản phẩm đã xóa thành công',
-      // data: processedProducts,
+      data: processedProducts,
     })
   } catch (error) {
     // Trả về phản hồi lỗi nếu có lỗi xảy ra
