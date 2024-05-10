@@ -4,12 +4,12 @@ interface Product {
   images: string[]
   description: string
   category: string[]
-  brand?: string
+  brand: string[]
   rating: number
   price: number
   price_before_discount: number
   quantity: number
-  stockQuantity: number
+  uses: string
   ingredient: Ingredient[]
   madeIn: string
   view: number

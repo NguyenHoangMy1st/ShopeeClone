@@ -1,24 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom'
-import '../styles/mainRegister.scss'
 import { useForm } from 'react-hook-form'
-import Input from 'src/components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { schema, Schema } from 'src/utils/rules'
+import Input from 'src/components/Input'
 import { useMutation } from 'react-query'
 import { omit } from 'lodash'
-import { schema, Schema } from 'src/utils/rules'
-import authApi from 'src/apis/auth.api'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
+import styles from 'src/Styles/Login.module.scss'
 import { useContext } from 'react'
-import { AppContext } from 'src/contexts/app.context'
-import { useTranslation } from 'react-i18next'
+import { AppContext } from 'src/contexts/app.contexts'
+import authApi from 'src/apis/auth.api'
+import { toast } from 'react-toastify'
 
 type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
+
 export default function Register() {
-  const { t } = useTranslation(['login'])
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
   const {
@@ -39,7 +37,7 @@ export default function Register() {
         toast.success('Tài khoản đăng ký thành công!', {
           autoClose: 1300 // Tự động đóng thông báo sau 2 giây
         })
-        navigate('/')
+        navigate('/login')
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
@@ -60,13 +58,22 @@ export default function Register() {
     })
   })
   return (
-    <div className='w-full bg-gradient-to-tl from-yellow to-rose-400'>
-      <div className='container main'>
-        <div className='max-w-7xl mx-auto px-4 '>
-          <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
-            <div className='lg:col-span-2 lg:col-start-4'>
-              <form className='p-10 rounded bg-white shadow-sm' onSubmit={onSubmit} noValidate>
-                <div className='text-2xl'>{t('regiter')}</div>
+    <div className='bg-yellow pt-8'>
+      <div className='h-[683px]'>
+        <div className='max-w-6xl mx-auto px-4'>
+          <div className='grid grid-cols-1 lg:grid-cols-5 py-8 lg:py-14 lg:pr-10 bg-white border rounded-xl'>
+            <div className='lg:col-span-3 lg:col-start-1 px-6 h-[533px] '>
+              <img
+                src='https://tronhouse.com/assets/data/editor/source/tai-sao-hinh-anh-san-pham-thuong-duoc-chup-tren-nen-trang/chup-anh-sang-tao-2.jpg'
+                alt=''
+                className='h-[533px] w-full object-cover'
+              />
+            </div>
+            <div className='lg:col-span-2 lg:col-start-4 place-content-center '>
+              <form className='p-10 roundedshadow-sm' onSubmit={onSubmit} noValidate>
+                <div className={styles.text}>
+                  <span className='text-4xl'>Đăng Ký</span>
+                </div>
                 <Input
                   name='email'
                   register={register}
@@ -75,40 +82,45 @@ export default function Register() {
                   errorMessage={errors.email?.message}
                   placeholder='Email'
                 />
+                <Input
+                  name='password'
+                  register={register}
+                  type='password'
+                  className='mt-2 relative'
+                  errorMessage={errors.password?.message}
+                  placeholder='Password'
+                  autoComplete='on'
+                />
 
-                <div className='relative w-full'>
-                  <Input
-                    autoComplete='on'
-                    name='password'
-                    className='mt-2'
-                    register={register}
-                    type='password'
-                    placeholder='PassWord'
-                    errorMessage={errors.password?.message}
-                  />
-                </div>
-                <div className='relative w-full'>
-                  <Input
-                    name='confirm_password'
-                    register={register}
-                    type='password'
-                    className='mt-2'
-                    errorMessage={errors.confirm_password?.message}
-                    placeholder='Confirm Password'
-                    autoComplete='on'
-                  />
-                </div>
-                <div className='mt-2'>
-                  <button className='w-full text-center py-4 px-2 uppercase rounded bg-rose-500 text-white text-sm hover:bg-rose-400'>
-                    {t('regiter')}
+                <Input
+                  name='confirm_password'
+                  register={register}
+                  type='password'
+                  className='mt-2 relative'
+                  errorMessage={errors.confirm_password?.message}
+                  placeholder='Confirm Password'
+                  autoComplete='on'
+                />
+                <div className='mt-3'>
+                  <button className='w-full text-center py-4 border rounded-lg  px-2 uppercase bg-pink_3 text-white text-sm hover:bg-pink_3/90'>
+                    Đăng Ký
                   </button>
-                  {/* <ToastContainer /> */}
                 </div>
                 <div className='flex items-center justify-center mt-8'>
-                  <span className='text-gray-400'>{t('text1')}</span>
-                  <Link className='text-rose-600 ml-1' to='/login'>
-                    {t('logIn')}
-                  </Link>
+                  <div className={styles.text}>
+                    <span className='text-gray-400 text-xl'>Bạn đã có tài khoản?</span>
+                  </div>
+                  <div className={styles.text}>
+                    <Link
+                      className='text-pink_2 ml-1  text-xl'
+                      to='/login'
+                      onClick={() => {
+                        window.scrollTo(0, 0)
+                      }}
+                    >
+                      Đăng Nhập
+                    </Link>
+                  </div>
                 </div>
               </form>
             </div>

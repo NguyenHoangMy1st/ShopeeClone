@@ -1,28 +1,26 @@
 import { Link, useNavigate } from 'react-router-dom'
-import '../styles/mainRegister.scss'
 import { useForm } from 'react-hook-form'
-import Input from 'src/components/Input'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Schema, schema } from 'src/utils/rules'
+import { schema, Schema } from 'src/utils/rules'
+import Input from 'src/components/Input'
 import { useMutation } from 'react-query'
-import { ErrorResponse } from 'src/types/utils.type'
+
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { toast } from 'react-toastify'
-import authApi from 'src/apis/auth.api'
-import 'react-toastify/dist/ReactToastify.css'
-import { HiArrowNarrowLeft } from 'react-icons/hi'
+import { ErrorResponse } from 'src/types/utils.type'
 import { useContext } from 'react'
-import { AppContext } from 'src/contexts/app.context'
+import { AppContext } from 'src/contexts/app.contexts'
+import styles from 'src/Styles/Login.module.scss'
 import path from 'src/constants/path'
-import { useTranslation } from 'react-i18next'
+import authApi from 'src/apis/auth.api'
+import { toast } from 'react-toastify'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
+
 export default function Login() {
-  const { t } = useTranslation(['login'])
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const navigate = useNavigate()
-  
+
   const {
     register,
     handleSubmit,
@@ -60,32 +58,23 @@ export default function Login() {
       }
     })
   })
-  const getGoogleAuthUrl = () => {
-    const { VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_REDIRECT_URI } = import.meta.env
-    const url = `https://accounts.google.com/o/oauth2/v2/auth`
-    const query = {
-      client_id: VITE_GOOGLE_CLIENT_ID,
-      redirect_uri: VITE_GOOGLE_REDIRECT_URI,
-      response_type: 'code',
-      scope: [
-        'https://www.googleapis.com/auth/userinfo.profile',
-        'https://www.googleapis.com/auth/userinfo.email'
-      ].join(' '),
-      prompt: 'consent',
-      access_type: 'offline'
-    }
-    const queryString = new URLSearchParams(query).toString()
-    return `${url}?${queryString}`
-  }
-  const googleOAuthUrl = getGoogleAuthUrl()
+
   return (
-    <div className='w-full bg-gradient-to-tl from-yellow to-rose-400'>
-      <div className='container main'>
-        <div className='max-w-7xl mx-auto px-4 '>
-          <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
-            <div className='lg:col-span-2 lg:col-start-4'>
-              <form className='p-10 rounded bg-white shadow-sm' onSubmit={onSubmit} noValidate>
-                <div className='text-2xl '> {t('logIn')}</div>
+    <div className='bg-yellow pt-8'>
+      <div className=' h-[683px] '>
+        <div className='max-w-6xl mx-auto px-4'>
+          <div className='grid grid-cols-1 lg:grid-cols-5 py-8 lg:py-14 lg:pr-10 bg-white border rounded-xl '>
+            <div className='lg:col-span-3 lg:col-start-1 px-6'>
+              <img
+                src='https://bazaarvietnam.vn/wp-content/uploads/2020/01/my-pham-xanh-03-drunk-elephant-hibiscus.jpg'
+                alt=''
+              />
+            </div>
+            <div className='lg:col-span-2 lg:col-start-4 place-content-center '>
+              <form className='p-10 roundedshadow-sm' onSubmit={onSubmit} noValidate>
+                <div className={styles.text}>
+                  <span className='text-4xl'>Đăng nhập</span>
+                </div>
                 <Input
                   name='email'
                   register={register}
@@ -94,32 +83,30 @@ export default function Login() {
                   errorMessage={errors.email?.message}
                   placeholder='Email'
                 />
-                <div className='relative w-full'>
-                  <Input
-                    autoComplete='on'
-                    name='password'
-                    className='mt-2'
-                    register={register}
-                    type='password'
-                    placeholder='PassWord'
-                    errorMessage={errors.password?.message}
-                  />
-                </div>
-                <div className='mt-3'>
-                  <button
-                    type='submit'
-                    className='w-full text-center py-4 px-2 uppercase rounded bg-rose-500 text-white text-sm hover:bg-rose-400'
-                  >
-                    {t('logIn')}
+                <Input
+                  name='password'
+                  register={register}
+                  type='password'
+                  className='mt-2 relative'
+                  errorMessage={errors.password?.message}
+                  placeholder='Password'
+                  autoComplete='on'
+                />
+                <div className='mt-2'>
+                  <button className='w-full text-center py-4 border rounded-lg  px-2 uppercase bg-pink_3 text-white text-sm hover:bg-pink_3/90'>
+                    Đăng nhập
                   </button>
                 </div>
-
-                <div className='mt-3 flex justify-end text-[14px] text-blue-500 hover:text-blue-600'>
-                  <a href='/forgetpassword'>{t('forgetpass')}</a>
-                  {/* <ToastContainer /> */}
+                <div className='m-2 flex justify-end text-xs text-blue-400 hover:text-blue-500'>
+                  <a href={path.forgetpassword}>Quên mật khẩu</a>
+                </div>
+                <div className='flex items-center'>
+                  <div className='flex-1 h-px w-4/5 bg-slate-200'></div>
+                  <span className='uppercase text-slate-300 px-4 text'>Hoặc</span>
+                  <div className='flex-1 h-px w-4/5 bg-slate-200'></div>
                 </div>
                 <div className='flex gap-x-5 mt-3'>
-                  <a className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105 '>
+                  <button className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105 '>
                     <div>
                       <svg xmlns='http://www.w3.org/2000/svg' height='25' width='25' viewBox='0 0 512 512'>
                         <path
@@ -129,11 +116,8 @@ export default function Login() {
                       </svg>
                     </div>
                     <div>Facebook</div>
-                  </a>
-                  <a
-                    className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105'
-                    href={googleOAuthUrl}
-                  >
+                  </button>
+                  <button className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105'>
                     <div>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -174,19 +158,23 @@ export default function Login() {
                       </svg>
                     </div>
                     <div>Google</div>
-                  </a>
+                  </button>
                 </div>
-                <div className='flex items-center justify-center mt-8'>
-                  <span className='text-gray-400'>{t('text')}</span>
-                  <Link className='text-rose-600 ml-1' to={path.register}>
-                    {t('regiter')}
-                  </Link>
-                </div>
-                <div className='mx-auto mt-2 w-max'>
-                  <Link className='flex items-center text-sm font-medium gap-x-1 text-gray-600' to='/'>
-                    <HiArrowNarrowLeft />
-                    Back to Home
-                  </Link>
+                <div className='flex items-center justify-center mt-8 '>
+                  <div className={styles.text}>
+                    <span className='text-gray-400  text-lg'>Bạn chưa có tài khoản?</span>
+                  </div>
+                  <div className={styles.text}>
+                    <Link
+                      className='text-pink_2 ml-1  text-lg'
+                      to={path.register}
+                      onClick={() => {
+                        window.scrollTo(0, 0)
+                      }}
+                    >
+                      Đăng ký
+                    </Link>
+                  </div>
                 </div>
               </form>
             </div>

@@ -7,7 +7,8 @@ interface BodyUpdateProfile extends Omit<User, '_id' | 'roles' | 'createdAt' | '
   password?: string
   newPassword?: string
 }
-interface BodyForgetPassword extends Omit<User, '_id' | 'roles' | 'createdAt' | 'updatedAt'> {
+interface BodyForgetPassword
+  extends Omit<User, '_id' | 'roles' | 'createdAt' | 'updatedAt' | 'name' | 'date_of_birth' | 'address' | 'phone'> {
   password?: string
   newPassword?: string
 }

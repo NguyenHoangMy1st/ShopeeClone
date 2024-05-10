@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { responseSuccess, ErrorHandler } from '../utils/response'
 import { STATUS } from '../constants/status'
 import { CategoryModel } from '../database/models/category.model'
+import { BrandModel } from '../database/models/brand.model'
 
 const addCategory = async (req: Request, res: Response) => {
   const name: string = req.body.name
@@ -76,12 +77,23 @@ const deleteCategory = async (req: Request, res: Response) => {
   }
 }
 
+const getBrands = async (req: Request, res: Response) => {
+  const { exclude } = req.query
+  let condition = exclude ? { _id: { $ne: exclude } } : {}
+  const brands = await BrandModel.find(condition).select({ __v: 0 }).lean()
+  const response = {
+    message: 'Lấy brands thành công',
+    data: brands,
+  }
+  return responseSuccess(res, response)
+}
 const categoryController = {
   addCategory,
   getCategory,
   getCategories,
   updateCategory,
   deleteCategory,
+  getBrands,
 }
 
 export default categoryController

@@ -1,38 +1,43 @@
+import { Breadcrumb, Modal } from 'antd'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { FaStarHalfAlt } from 'react-icons/fa'
+import { FaStar } from 'react-icons/fa6'
+import { HiChevronDown, HiChevronUp } from 'react-icons/hi'
 import { useMutation, useQuery, useQueryClient } from 'react-query'
-import DOMPurify from 'dompurify'
-import { useNavigate, useParams } from 'react-router-dom'
-import productApi from 'src/apis/product.api'
-import QuantityController from 'src/components/QuantityController'
-import ProductRating from 'src/components/ProductRating'
-import { formatCurrency, formatNumberToSocialStyle, getIdFromNameId, rateSale } from 'src/utils/utils'
-import { Popover } from 'antd'
-import { useEffect, useMemo, useState, useRef } from 'react'
-import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
-import purchaseApi from 'src/apis/purchase.api'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { purchasesStatus } from 'src/constants/purchase'
-
-import Product from '../ProductList/Product'
+import productApi from 'src/apis/product.api'
+import purchaseApi from 'src/apis/purchase.api'
+import AddPurchase from 'src/components/AddPurchase'
+import Evaluate from 'src/components/Evaluate'
 import path from 'src/constants/path'
-import { useTranslation } from 'react-i18next'
+import { purchasesStatus } from 'src/constants/purchase'
+import 'src/Styles/CheckBoxBrand.scss'
+import { Product as ProductType, ProductListConfig } from 'src/types/product.type'
+import { formatCurrency, getIdFromNameId, rateSale } from 'src/utils/utils'
 
-const ProductDetail: React.FC = () => {
-  const { t } = useTranslation(['detail'])
-  const content1 = (
-    <div className='w-72 h-36 px-5 py-2'>
-      <span>{t('text1plus')}</span>
-    </div>
-  )
-  const content2 = (
-    <div className='w-72 h-30 px-5 py-2'>
-      <span>{t('text2plus')}</span>
-    </div>
-  )
-  const content3 = (
-    <div className='w-72 h-30 px-5 py-2'>
-      <span>{t('text3plus')}</span>
-    </div>
-  )
+export default function ProductDetail() {
+  const [showAllContent, setShowAllContent] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const handleShowMore = () => {
+    setShowAllContent(true)
+  }
+
+  const handleHideContent = () => {
+    setShowAllContent(false)
+  }
+
+  const showModal = () => {
+    setIsModalOpen(true)
+  }
+
+  const handleOk = () => {
+    setIsModalOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalOpen(false)
+  }
   const queryClient = useQueryClient()
   const { nameId } = useParams()
 
@@ -42,7 +47,7 @@ const ProductDetail: React.FC = () => {
     queryKey: ['product', id],
     queryFn: () => productApi.getProductDetail(id as string)
   })
-  const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
+  const [currentIndexImages, setCurrentIndexImages] = useState([0, 4])
   const [activeImage, setActiveImage] = useState('')
   const product = productDetailData?.data.data
   const imageRef = useRef<HTMLImageElement>(null)
@@ -135,199 +140,476 @@ const ProductDetail: React.FC = () => {
       }
     })
   }
-
   if (!product) return null
+
   return (
-    <div className='bg-neutral-100 pt-10 pb-20'>
-      <div className='container '>
-        <div className='bg-white shadow mx-32 p-5'>
-          <div className='grid grid-cols-12 gap-9'>
-            <div className='col-span-5'>
+    <div className='h-full flex flex-col font '>
+      <div className=' min-h-32'>
+        <div className='flex flex-col gap-2 my-4 mx-20'>
+          <div
+            className='grid gap-28  border-white border-b-gray-100 border-2 pb-8'
+            style={{ gridTemplateColumns: '35% 65%' }}
+          >
+            <div className='grid gap-6 ' style={{ gridTemplateColumns: '20% 80%' }}>
+              <div className='flex flex-col gap-4 item-center justify-center  '>
+                <button className=' text-black text-[25px] text-center flex justify-center mr-[20px]   ' onClick={prev}>
+                  <HiChevronUp />
+                </button>
+                {currentImages.map((img) => {
+                  const isActive = img === activeImage
+                  return (
+                    <div
+                      className=' flex flex-col gap-3 justify-center item-center relative mr-[20px]  '
+                      key={img}
+                      onMouseEnter={() => chooseActive(img)}
+                    >
+                      <img src={img} alt={product?.name} className='cursor-pointer w-[100%] object-center ' />
+                      {isActive && <div className='absolute inset-0 border-2 border-gray-600' />}
+                    </div>
+                  )
+                })}
+                <button className=' text-black text-[25px] text-center flex justify-center mr-[20px]  ' onClick={next}>
+                  <HiChevronDown />
+                </button>
+              </div>
               <div
-                className='relative w-full cursor-zoom-in overflow-hidden pt-[100%] shadow'
+                className='relative w-[400px] cursor-zoom-in overflow-hidden shadow rounded-lg'
                 onMouseMove={handleZoom}
                 onMouseLeave={handleRemoveZoom}
               >
                 <img
                   src={activeImage}
-                  alt={product.name}
-                  className=' absolute top-0 left-0 h-full w-full bg-white object-cover'
+                  alt={product?.name}
+                  className=' absolute top-0 left-0 h-full w-full bg-white object-center rounded-lg'
                   ref={imageRef}
                 />
               </div>
-              <div className='relative mt-4 grid grid-cols-5 gap-1'>
-                <button
-                  className='absolute left-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
-                  onClick={prev}
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='h-5 w-5'
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M15.75 19.5L8.25 12l7.5-7.5' />
-                  </svg>
-                </button>
-                {currentImages.map((img) => {
-                  const isActive = img === activeImage
-                  return (
-                    <div className='relative w-full pt-[100%]' key={img} onMouseEnter={() => chooseActive(img)}>
-                      <img
-                        src={img}
-                        alt={product.name}
-                        className='absolute top-0 left-0 h-full w-full cursor-pointer bg-white object-cover'
-                      />
-                      {isActive && <div className='absolute inset-0 border-2 border-[#1CA7EC]' />}
+            </div>
+            <div className='flex flex-col gap-2  w-[700px]'>
+              <Breadcrumb
+                separator='>'
+                items={[
+                  {
+                    title: <Link to={path.home}>Trang chủ</Link>
+                  },
+                  {
+                    title: <Link to={path.productDetail}>Sản phẩm</Link>
+                  }
+                ]}
+              />
+              <div className='text-base font-bold text-rose-700'>{product?.brand}</div>
+              <div className='text-[19px] text-left font-bold text-gray-700 w-[750px]'>{product?.name}</div>
+              <div className='flex gap-2 mt-2'>
+                <div className='flex gap-1 text-orange-500 items-center justify-center text-[13px] border-white border-r-gray-200 border-2 pr-3'>
+                  <FaStar />
+                  <FaStar />
+                  <FaStar />
+                  <FaStar />
+                  <FaStarHalfAlt />
+                  <span className='text-black ml-2 text-[13px]'>(10)</span>
+                </div>
+                <div className='flex gap-1  border-white border-r-gray-200 border-2 pr-3'>
+                  <span className='font-semibold'>Xuất sứ :</span>
+                  <span>{product?.madeIn}</span>
+                </div>
+                <div className='flex gap-1  border-white border-r-gray-200 border-2 pr-3'>
+                  <span className='font-semibold'>Mã:</span>
+                  <span>5044</span>
+                </div>
+                <div className='flex gap-1'>
+                  <span className='font-semibold'>Lượt bán:</span>
+                  <span>50.44k</span>
+                </div>
+              </div>
+              {product.price_before_discount != product.price ? (
+                <div className='text-[22px] flex gap-3 mt-2'>
+                  <div className='font-bold text-black'>{formatCurrency(product.price)}đ</div>
+                  <div className='font-medium text-gray-400 line-through text-[15px] pt-[6px] '>
+                    {formatCurrency(product.price_before_discount)}đ
+                  </div>
+                  <div className='relative bg-[#c73030] w-[40px] h-[22px] flex justify-center items-center rounded-full'>
+                    <div className='absolute text-gray-100 text-[12px] p-1'>
+                      {' '}
+                      -{rateSale(product.price_before_discount, product.price)}
                     </div>
-                  )
-                })}
-                <button
-                  className='absolute right-0 top-1/2 z-10 h-9 w-5 -translate-y-1/2 bg-black/20 text-white'
-                  onClick={next}
-                >
-                  <svg
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    strokeWidth={1.5}
-                    stroke='currentColor'
-                    className='h-5 w-5'
-                  >
-                    <path strokeLinecap='round' strokeLinejoin='round' d='M8.25 4.5l7.5 7.5-7.5 7.5' />
-                  </svg>
-                </button>
+                  </div>
+                </div>
+              ) : (
+                <div className='text-[22px] flex gap-3 mt-2'>
+                  <div className='font-bold text-black'>{formatCurrency(product.price)}đ</div>
+                </div>
+              )}
+              <div className='border-gradient rounded-lg p-2 mt-4 flex flex-col gap-1 w-[740px]'>
+                <div className='font-bold text-[15px]'>Bảng thành phần :</div>
+                <p className='line-clamp-6'>
+                  Kem dưỡng AHC Premium Ex Hydra B5 Biome Capsule Cream tập trung cấp dưỡng ẩm, phục hồi và tăng cường
+                  sức khỏe làn da mang lại vẻ ngoài sáng mịn, tươi tắn. Sản phẩm chứa 150 triệu lợi khuẩn giúp bổ sung
+                  vào làn da, nâng cao sức đề kháng và cải thiện sắc da sáng mịn, khỏe khoắn rõ rệt. Thành phần
+                  prebiotics trong kem dưỡng ẩm AHC giúp kích hoạt hoạt chất giữ ẩm cho hàng rào sinh học của da, làm
+                  cho làn da khỏe mạnh hơn. Kết hợp với đó là công nghệ Micro Liposome chứa hàng triệu vi khuẩn có lợi
+                  được bao bọc bởi màng biofilm, giúp ổn định chất lượng và vận chuyển lactobacillus đầy đủ và nhanh
+                  chóng vào trong da, đem lại làn da mềm mại tức thì mà không gây dính rít.
+                </p>
+              </div>
+              <div className='mt-2'>
+                <AddPurchase product={product} addToCart={addToCart} buyNow={buyNow} />
               </div>
             </div>
-            <div className='col-span-7 pt-5 '>
-              <h1 className='text-xl font-medium uppercase'>{product.name}</h1>
-              <div className='mt-8 flex items-center'>
-                <div className='flex items-center'>
-                  <span className='mr-1 border-b border-b-orange-400 text-orange-500'>{product.rating}</span>
-                  <ProductRating
-                    rating={product.rating}
-                    activeClassname='fill-orange-400 text-orange-400 h-4 w-4'
-                    nonActiveClassname='fill-gray-300 text-gray-300 h-4 w-4'
+          </div>
+          <div
+            className='grid gap-24 mt-[50px] border-white border-b-gray-100 border-2 pb-8'
+            style={{ gridTemplateColumns: '30% 70%' }}
+          >
+            <div className='uppercase text-left text-xl font-bold'>Giới thiệu</div>
+            <div className=' w-[90%] text-[14px]'>
+              <div className='content ' style={{ height: showAllContent ? 'auto' : '170px', overflow: 'hidden' }}>
+                <div id='iaat'>
+                  <p id='iwj1'>
+                    <em id='i46l'>
+                      <span id='iu7j'>Công dụng chính:</span> Kem chống nắng dạng sữa dưỡng da bảo vệ hoàn hảo Anessa
+                      Perfect UV Skincare Milk SPF 50+ PA++++ với kết cấu dạng sữa mỏng nhẹ, giúp chống nắng vượt trội
+                      nhiều giờ liền mà vẫn có một làn da mịn mượt, không gây nhờn rít, bóng dầu. Đặc biệt, khả năng
+                      chống trôi trong nước &amp; mồ hôi với công nghệ độc quyền Aqua Booster, lên đến 80 phút trong hồ
+                      bơi, sản phẩm rất thích hợp dùng cho những hoạt động ngoài trời hay đi chơi, du lịch, công tác.
+                    </em>
+                    <br id='iwce' />
+                    <em id='itc5'>
+                      <span id='is775'>Đối tượng sử dụng:</span> Thích hợp với mọi loại da
+                    </em>
+                    <br id='itq0o' />
+                    <span id='iafuy'></span>
+                    <br id='izatv' />
+                  </p>
+                  <img
+                    id='in205'
+                    src='https://image.hsv-tech.io/bbx/common/f71c3a0f-29f5-4593-a28a-4471e478d52e.webp'
+                    alt='Sunscreen product'
                   />
-                </div>
-                <div className='mx-4 h-4 w-[1px] bg-gray-300'></div>
-                <div>
-                  <span className='border-b border-b-gray-500'>{formatNumberToSocialStyle(product.sold)}</span>
-                  <span className='ml-1 text-gray-500 '>{t('sold')}</span>
+                  <h2 id='i8bvb'>
+                    <br />
+                    Công dụng sữa chống nắng Anessa Perfect UV Sunscreen Skincare Milk
+                  </h2>
+                  <ul id='iod8p'>
+                    <li id='ik83f'>
+                      Kết cấu dạng sữa mỏng nhẹ, khô ráo, dễ dàng thẩm thấu qua da, không gây nhờn rít.
+                    </li>
+                    <li id='izxvh'>Chỉ số chống nắng cao với SPF 50+, PA++++, bảo vệ da tối ưu.</li>
+                    <li id='iqngw'>
+                      Công nghệ chống nắng 360° ngăn chặn tác hại của tia UV trên mọi bề mặt da và mọi góc độ.
+                    </li>
+                    <li id='i8t2w'>
+                      Công nghệ độc quyền Aqua Booster, chống trôi trong nước &amp; mồ hôi rất cao, lên đến 80 phút
+                      trong hồ bơi.
+                    </li>
+                    <li id='iszax'>
+                      Công nghệ “chống ma sát” độc đáo lần đầu tiên có trong sữa chống nắng, càng ma sát, lớp chống nắng
+                      mịn mượt sẽ không bị bong ra và gia tăng khả năng chống nắng, bảo vệ da hơn.
+                    </li>
+                    <li id='icpuk'>Chống cát dính vào da.</li>
+                    <li id='inbkm'>
+                      50% chiết xuất dưỡng da (chiết xuất hoa hồng, collagen, lô hội và super Hyaluronic Acid) giúp da
+                      mịn mượt, gia tăng độ đàn hồi, chống oxi hoá, chống viêm nhiễm và kiểm soát bóng dầu.
+                    </li>
+                    <li id='iz8dg'>Công thức với mùi hương thanh mát từ Cam, Quýt dễ chịu.</li>
+                    <li id='ihy6h'>Có thể dùng làm lớp lót trang điểm và dễ dàng làm sạch với sữa rửa mặt.</li>
+                  </ul>
+                  <div id='infxo' className='media-wrap image-wrap'>
+                    <img
+                      src='https://file.hstatic.net/200000223113/file/dedanglamsach_934f7a6d45a548e5980be2d601ad6c51.png'
+                      id='ij1gu'
+                      className='media-wrap image-wrap'
+                      alt='Sunscreen cleansing'
+                    />
+                  </div>
+                  <p id='idzfj'>
+                    <br id='iajwe' />
+                    <br id='imzaj' />
+                    <img
+                      id='iawki'
+                      src='https://image.hsv-tech.io/bbx/common/6208b755-9a22-4d33-913e-b232d2486ca3.webp'
+                      alt='Sunscreen usage'
+                    />
+                  </p>
+                  <h2 id='i174o'>Hướng dẫn sử dụng</h2>
+                  <span id='im2oc'>- Lắc đều để hạt bi hòa hợp sản phẩm trước khi sử dụng.</span>
+                  <span id='i4pc7'>
+                    <br />- Dùng sau bước dưỡng da, thoa đều khắp vùng da cần bảo vệ.
+                  </span>
+                  <br id='iv8sl' />
+                  <span id='i7vjm'>
+                    - Để đạt hiệu quả cao nhất, nên thoa lại sau khi tiếp xúc nhiều với nước hoặc lau bằng khăn.
+                  </span>
+                  <br id='ijy1m' />
+                  <span id='i355f'>- Dễ dàng làm sạch với sữa rửa mặt.</span>
+                  <br id='iucz9' />
+                  <span id='ihcth'>Lưu ý:</span>
+                  <br id='ixj8k' />
+                  <span id='i41i9'>- Tránh tiếp xúc với mắt. Nếu có, rửa ngay bằng nước lạnh hoặc nước ấm</span>
+                  <br id='in37p' />
+                  <span id='izgv8'>- Không sử dụng cho vùng da bị tổn thương</span>
+                  <br id='i8ik8' />
+                  <span id='ib2rm'>- Ngưng dùng ngay khi có biểu hiện kích ứng và tham khảo ý kiến bác sĩ da liễu</span>
+                  <br id='i2byq' />
+                  <span id='ie7gk'>
+                    - Bảo quản tránh ánh sáng trực tiếp, nơi có nhiệt độ cao hoặc ẩm ướt. Để xa tầm tay trẻ
+                  </span>
+                  <br id='imoeb' />
+                  <p id='iqe1g'></p>
+                  <div id='ipo67' className='media-wrap image-wrap'>
+                    <img
+                      src='https://file.hstatic.net/200000223113/file/huongdansudung_87b9ccd21beb4974b7cad7099200bf3a.png'
+                      id='in8fj'
+                      className='media-wrap image-wrap'
+                      alt='Sunscreen usage guide'
+                    />
+                  </div>
                 </div>
               </div>
-              <div className='mt-8 flex items-center bg-gray-50 px-5 py-4'>
-                <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
-                <div className='ml-3 text-3xl font-medium text-[#1CA7EC]'>₫{formatCurrency(product.price)}</div>
-                <div className='ml-4 rounded-sm bg-[#1CA7EC] px-1 py-[2px] text-xs font-semibold uppercase text-white'>
-                  {rateSale(product.price_before_discount, product.price)}
-                  {t('reduce')}
-                </div>
-              </div>
-              <div className='mt-8 flex items-center'>
-                <div className='capitalize text-gray-500'> {t('Quantity')}</div>
-                <QuantityController
-                  onDecrease={handleBuyCount}
-                  onIncrease={handleBuyCount}
-                  onType={handleBuyCount}
-                  value={buyCount}
-                  max={product.quantity}
-                />
-                <div className='ml-6 text-sm text-gray-500'>
-                  {product.quantity} {t('text')}
-                </div>
-              </div>
-              <div className='mt-8 flex items-center border-b pb-7 border-b-gray-200'>
+              {!showAllContent ? (
                 <button
-                  onClick={addToCart}
-                  className='flex h-12 items-center justify-center rounded-sm border border-[#1CA7EC] bg-[#1CA7EC]/10 px-5 capitalize text-[#1CA7EC] shadow-sm hover:bg-[#1CA7EC]/5'
+                  onClick={handleShowMore}
+                  className='mt-[-90px] text-black bg-gradient-to-t from-white via-white to-white/50 p-16 font-bold  w-[890px] text-[16px]'
                 >
-                  <svg
-                    enableBackground='new 0 0 15 15'
-                    viewBox='0 0 15 15'
-                    x={0}
-                    y={0}
-                    className='mr-[10px] h-5 w-5 fill-current stroke-[#1CA7EC] text-[#1CA7EC]'
-                  >
-                    <g>
-                      <g>
-                        <polyline
-                          fill='none'
-                          points='.5 .5 2.7 .5 5.2 11 12.4 11 14.5 3.5 3.7 3.5'
-                          strokeLinecap='round'
-                          strokeLinejoin='round'
-                          strokeMiterlimit={10}
-                        />
-                        <circle cx={6} cy='13.5' r={1} stroke='none' />
-                        <circle cx='11.5' cy='13.5' r={1} stroke='none' />
-                      </g>
-                      <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1='7.5' x2='10.5' y1={7} y2={7} />
-                      <line fill='none' strokeLinecap='round' strokeMiterlimit={10} x1={9} x2={9} y1='8.5' y2='5.5' />
-                    </g>
-                  </svg>
-                  {t('add')}
+                  Xem thêm
                 </button>
+              ) : (
                 <button
-                  onClick={buyNow}
-                  className='fkex ml-4 h-12 min-w-[5rem] items-center justify-center rounded-sm bg-[#1CA7EC] px-5 capitalize text-white shadow-sm outline-none hover:bg-rose-400/90'
+                  onClick={handleHideContent}
+                  className='mt-4 text-black text-center font-bold text-[16px] w-[890px]'
                 >
-                  {t('buy')}
+                  Ẩn bớt
                 </button>
+              )}
+            </div>
+          </div>
+          <div
+            className='grid gap-24 mt-[50px] border-white border-b-gray-100 border-2 pb-8'
+            style={{ gridTemplateColumns: '30% 70%' }}
+          >
+            <div className='flex flex-col'>
+              <div className='flex justify-between'>
+                <span className='text-left text-xl font-bold'>12 đánh giá</span>
+                <button
+                  className='uppercase text-[16px] font-bold underline decoration-1 hover:text-black/70'
+                  onClick={showModal}
+                >
+                  Viết đánh giá
+                </button>
+                <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel} width={800} footer={null}>
+                  <Evaluate />
+                </Modal>
               </div>
-
-              <div className='pt-7 flex gap-5 justify-between'>
-                <div className='flex text-[#1CA7EC] gap-1'>
-                  <img src='mienphi.png' alt='' className='w-5 h-5' />
-                  <Popover placement='bottom' content={content1}>
-                    <span className='text-gray-700'> {t('text1')}</span>
-                  </Popover>
+              <div className='flex gap-2 text-orange-500 text-[30px] text-left mt-6'>
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+                <FaStar />
+              </div>
+              <div className='flex flex-col gap-4 mt-8 '>
+                <div className='flex gap-2  w-full item-center justify-center h-[30px] text-base'>
+                  <span className='text-end p-1 '>5</span>
+                  <div className='w-full flex items-center justify-center '>
+                    <div className=' w-full box-border  leading-snug'>
+                      <div className='w-full'>
+                        <div className='h-[5px] bg-[#dfdfdf]  overflow-hidden rounded-[100px] w-full   '>
+                          <div
+                            className='ant-progress-bg flex items-center justify-center'
+                            style={{ width: '66.6667%', height: '5px', background: 'rgb(0, 0, 0)' }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className=' text-center h-[30px] p-1'>(8)</span>
                 </div>
-                <div className='flex text-[#1CA7EC] gap-1'>
-                  <img src='baomat.png' alt='' className='w-5 h-5' />
-                  <Popover placement='bottom' content={content2}>
-                    <span className='text-gray-700'>{t('text2')}</span>
-                  </Popover>
+                <div className='flex gap-2  w-full item-center justify-center h-[30px] text-base'>
+                  <span className='text-end p-1 '>4</span>
+                  <div className='w-full flex items-center justify-center '>
+                    <div className=' w-full box-border  leading-snug'>
+                      <div className='w-full'>
+                        <div className='h-[5px] bg-[#dfdfdf]  overflow-hidden rounded-[100px] w-full   '>
+                          <div
+                            className='ant-progress-bg flex items-center justify-center'
+                            style={{ width: '0%', height: '5px', background: 'rgb(0, 0, 0)' }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className=' text-center h-[30px] p-1'>(0)</span>
                 </div>
-                <div className='flex text-[#1CA7EC] gap-1'>
-                  <img src='vanchuyen.png' alt='' className='w-5 h-5' />
-                  <Popover placement='bottom' content={content3}>
-                    <span className='text-gray-700'>Miễn phí vận chuyển</span>
-                  </Popover>
+                <div className='flex gap-2  w-full item-center justify-center h-[30px] text-base'>
+                  <span className='text-end p-1 '>3</span>
+                  <div className='w-full flex items-center justify-center '>
+                    <div className=' w-full box-border  leading-snug'>
+                      <div className='w-full'>
+                        <div className='h-[5px] bg-[#dfdfdf]  overflow-hidden rounded-[100px] w-full   '>
+                          <div
+                            className='ant-progress-bg flex items-center justify-center'
+                            style={{ width: '0%', height: '5px', background: 'rgb(0, 0, 0)' }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className=' text-center h-[30px] p-1'>(0)</span>
+                </div>
+                <div className='flex gap-2  w-full item-center justify-center h-[30px] text-base'>
+                  <span className='text-end p-1 '>2</span>
+                  <div className='w-full flex items-center justify-center '>
+                    <div className=' w-full box-border  leading-snug'>
+                      <div className='w-full'>
+                        <div className='h-[5px] bg-[#dfdfdf]  overflow-hidden rounded-[100px] w-full   '>
+                          <div
+                            className='ant-progress-bg flex items-center justify-center'
+                            style={{ width: '0%', height: '5px', background: 'rgb(0, 0, 0)' }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className=' text-center h-[30px] p-1'>(0)</span>
+                </div>
+                <div className='flex gap-2  w-full item-center justify-center h-[30px] text-base'>
+                  <span className='text-end p-1 '>1</span>
+                  <div className='w-full flex items-center justify-center '>
+                    <div className=' w-full box-border  leading-snug'>
+                      <div className='w-full'>
+                        <div className='h-[5px] bg-[#dfdfdf]  overflow-hidden rounded-[100px] w-full   '>
+                          <div
+                            className='ant-progress-bg flex items-center justify-center'
+                            style={{ width: '0', height: '5px', background: 'rgb(0, 0, 0)' }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <span className=' text-center h-[30px] p-1'>(0)</span>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div className='container'>
-        <div className='mt-8 bg-white shadow mx-32 p-5'>
-          <div className='rounded bg-neutral-100 p-4 text-lg capitalize text-slate-700'>{t('Describe')}</div>
-          <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
             <div
-              dangerouslySetInnerHTML={{
-                __html: DOMPurify.sanitize(product.description)
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      <div className='container'>
-        <div className='mt-8 bg-white shadow mx-32 p-5'>
-          <div className='uppercase text-gray-400'>{t('maybe')}</div>
-          {productsData && (
-            <div className='mt-6 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6'>
-              {productsData.data.data.products.map((product) => (
-                <div className='col-span-1' key={product._id}>
-                  <Product product={product} />
+              className='flex flex-col gap-2 w-[90%] scrollable-container'
+              style={{ maxHeight: '455px', overflowY: 'auto' }}
+            >
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
                 </div>
-              ))}
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
+                </div>
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
+                </div>
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
+                </div>
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
+                </div>
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
+              <div className='flex flex-col text-[14px] border-white border-b-gray-100 border-2 pb-4 w-[91%] '>
+                <span>mon</span>
+                <div className='flex gap-3 mt-2'>
+                  <div className='flex gap-1 text-orange-500 text-[13px] pr-3 '>
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                    <FaStar />
+                  </div>
+                  <div className='text-gray-400 '>17/04/2023</div>
+                </div>
+                <p className='text-base mt-2'>
+                  Dưỡng ẩm và giảm kích ứng da khá tốt, bôi lên cảm giác mát, da căng bóng, dùng kèm với retinol
+                </p>
+              </div>
             </div>
-          )}
+          </div>
+          <div
+            className='grid gap-24 mt-[50px] border-white border-b-gray-100 border-2 pb-8'
+            style={{ gridTemplateColumns: '30% 70%' }}
+          >
+            <div className='uppercase text-left text-xl font-bold'>Sản phẩm liên quan</div>
+            <div className='flex flex-col w-[90%]'>
+              {/* <div className='grid grid-cols-3 gap-5'>
+                {Array(6)
+                  .fill(0)
+                  .map((_, index) => (
+                    <div className='col-span-1' key={index}>
+                      <Product />
+                    </div>
+                  ))}
+              </div>{' '} */}
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
-export default ProductDetail

@@ -1,50 +1,48 @@
 import { FC } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Autoplay } from 'swiper'
+import { Navigation, Pagination } from 'swiper'
 
-import 'swiper/css'
-import 'swiper/css/pagination'
-import 'swiper/css/navigation'
+import 'swiper/swiper-bundle.css'
+import 'src/Styles/SwiperCustom.scss'
 
 interface AppProps {}
 
-const App: FC<AppProps> = () => {
+const Banner: FC<AppProps> = () => {
   return (
     <>
       <Swiper
         spaceBetween={30}
-        centeredSlides={true}
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: true
-        }}
+        cssMode={true}
+        navigation={true}
+        mousewheel={true}
+        keyboard={true}
         pagination={{
           clickable: true
         }}
-        modules={[Autoplay, Pagination, Navigation]}
-        className='h-full w-full justify-center'
+        modules={[Pagination, Navigation]}
+        className='h-full w-full justify-center productSale-Font '
       >
         <SwiperSlide className='flex w-full items-center justify-center h-full'>
-          <img src='5.jpg' alt='' className='rounded-md' />
+          <img src='swiper1.webp' alt='' className='rounded-md' />
+        </SwiperSlide>
+        <SwiperSlide className='flex w-full items-center justify-center h-full'>
+          <img src='swiper.webp' alt='' className='rounded-md' />
         </SwiperSlide>
         <SwiperSlide>
-          <img src='2.jpg' alt='' className='rounded-md' />
+          <img src='swiper2.webp' alt='' className='rounded-md' />
         </SwiperSlide>
         <SwiperSlide>
-          <img src='3.jpg' alt='' className='rounded-md' />
+          <img src='swiper3.webp' alt='' className='rounded-md h-[340px]' />
         </SwiperSlide>
         <SwiperSlide>
-          <img src='7.jpg' alt='' className='rounded-md' />
+          <img src='swiper4.webp' alt='' className='rounded-md' />
         </SwiperSlide>
         <SwiperSlide>
-          <img src='4.jpg' alt='' className='rounded-md' />
-        </SwiperSlide>
-        <SwiperSlide>
-          <img src='1.jpg' alt='' className='rounded-md' />
+          <img src='swiper5.webp' alt='' className='rounded-md' />
         </SwiperSlide>
       </Swiper>
     </>
   )
 }
 
-export default App
+export default Banner

@@ -1,23 +1,25 @@
 export interface Product {
   _id: string
+  name: string
+  image: string
   images: string[]
-  price: number
+  description: string
+  category: string[]
+  brand: string[]
   rating: number
+  price: number
   price_before_discount: number
   quantity: number
-  sold: number
+  stockQuantity: number
+  ingredient: Ingredient[]
+  madeIn: string
   view: number
-  name: string
-  description: string
-  category: {
-    _id: string
-    name: string
-  }
-  image: string
-  createdAt: string
-  updatedAt: string
+  sold: number
+  status?: string
 }
-
+interface Ingredient {
+  name: string
+}
 export interface ProductList {
   products: Product[]
   pagination: {
@@ -38,4 +40,5 @@ export interface ProductListConfig {
   price_min?: number | string
   name?: string
   category?: string
+  brand?: string
 }

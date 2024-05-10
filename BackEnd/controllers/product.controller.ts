@@ -53,12 +53,11 @@ const addProduct = async (req: Request, res: Response) => {
       price,
       price_before_discount,
       quantity,
-      stockQuantity,
+      uses,
       ingredient,
       status,
       madeIn,
     } = form
-
     const product = {
       name,
       description,
@@ -70,7 +69,7 @@ const addProduct = async (req: Request, res: Response) => {
       rating: 0,
       price_before_discount,
       quantity,
-      stockQuantity: stockQuantity || 0, // Thiết lập giá trị mặc định cho stockQuantity
+      uses,
       ingredient,
       sold: 0, // Giá trị mặc định cho sold
       view: 0, // Giá trị mặc định cho view
@@ -87,9 +86,10 @@ const addProduct = async (req: Request, res: Response) => {
         },
       }),
     }
-
+    console.log(response)
     return responseSuccess(res, response)
   } catch (error) {
+    console.log(error)
     return responseError(res, 'Không thể tạo sản phẩm')
   }
 }
@@ -148,7 +148,6 @@ const getProducts = async (req: Request, res: Response) => {
       $options: 'i',
     }
   }
-  console.log(condition)
   let [products, totalProducts]: [products: any, totalProducts: any] =
     await Promise.all([
       ProductModel.find(condition)
@@ -229,7 +228,7 @@ const updateProduct = async (req: Request, res: Response) => {
     price,
     price_before_discount,
     quantity,
-    stockQuantity,
+    uses,
     ingredient,
     status,
     madeIn,
@@ -244,7 +243,7 @@ const updateProduct = async (req: Request, res: Response) => {
       price,
       price_before_discount,
       quantity,
-      stockQuantity,
+      uses,
       ingredient,
       status,
       madeIn,

@@ -1,7 +1,9 @@
+import { FaStar } from 'react-icons/fa6'
+
 export default function ProductRating({
   rating,
-  activeClassname = 'h-3 w-3 fill-orange-400 text-orange-400',
-  nonActiveClassname = 'h-3 w-3 fill-current text-gray-300'
+  activeClassname = 'text-[14px] fill-orange-600 text-orange-800 rounded-lg',
+  nonActiveClassname = 'text-[14px] fill-current text-gray-300 rounded-lg'
 }: {
   rating: number
   activeClassname?: string
@@ -17,29 +19,15 @@ export default function ProductRating({
     return '0%'
   }
   return (
-    <div className='flex items-center'>
+    <div className='flex items-center gap-1  '>
       {Array(5)
         .fill(0)
         .map((_, index) => (
-          <div className='relative' key={index}>
+          <div className='relative ' key={index}>
             <div className='absolute top-0 left-0 h-full overflow-hidden' style={{ width: handleWidth(index + 1) }}>
-              <svg enableBackground='new 0 0 15 15' viewBox='0 0 15 15' x={0} y={0} className={activeClassname}>
-                <polygon
-                  points='7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  strokeMiterlimit={10}
-                />
-              </svg>
+              <FaStar className={activeClassname} />
             </div>
-            <svg enableBackground='new 0 0 15 15' viewBox='0 0 15 15' x={0} y={0} className={nonActiveClassname}>
-              <polygon
-                points='7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeMiterlimit={10}
-              />
-            </svg>
+            <FaStar className={nonActiveClassname} />
           </div>
         ))}
     </div>

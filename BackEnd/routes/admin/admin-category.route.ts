@@ -14,6 +14,7 @@ adminCategoryRouter.get(
   helpersMiddleware.entityValidator,
   wrapAsync(categoryController.getCategories)
 )
+adminCategoryRouter.get('/brands', wrapAsync(categoryController.getBrands))
 adminCategoryRouter.get(
   '/:category_id',
   authMiddleware.verifyAccessToken,

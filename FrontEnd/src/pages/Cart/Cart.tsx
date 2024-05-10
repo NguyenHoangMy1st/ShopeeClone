@@ -1,27 +1,25 @@
-import { useMutation, useQuery } from 'react-query'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { Breadcrumb, Popconfirm, Switch } from 'antd'
+import './styles.scss'
+import 'src/Styles/Header.scss'
 import { Link, useLocation } from 'react-router-dom'
-import purchaseApi from 'src/apis/purchase.api'
-import Button from 'src/components/Button'
-import QuantityController from 'src/components/QuantityController'
 import path from 'src/constants/path'
+import { useContext, useEffect, useMemo, useState } from 'react'
+import { useMutation, useQuery } from 'react-query'
+import { AppContext } from 'src/contexts/app.contexts'
 import { purchasesStatus } from 'src/constants/purchase'
-import { Purchase } from 'src/types/purchase.type'
-import { formatCurrency, generateNameId } from 'src/utils/utils'
+import purchaseApi from 'src/apis/purchase.api'
 import { produce } from 'immer'
 import { keyBy } from 'lodash'
-import { AppContext } from 'src/contexts/app.context'
-import noproduct from 'src/assets/images/no-product.png'
-import { Modal } from 'antd'
-import Payment from '../Payment'
-import { useTranslation } from 'react-i18next'
+import { formatCurrency, generateNameId } from 'src/utils/utils'
+import QuantityController from 'src/components/QuantityController'
+import { Purchase } from 'src/types/purchase.type'
+import 'src/Styles/CheckBoxBrand.scss'
 
 export default function Cart() {
-  const { t } = useTranslation(['cart'])
   const { extendedPurchases, setExtendedPurchases } = useContext(AppContext)
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [shouldRefetch, setShouldRefetch] = useState(false)
-  const [dataAddress, setDataAddress] = useState([''])
+
   const { data: purchasesInCartData, refetch } = useQuery({
     queryKey: ['purchases', { status: purchasesStatus.inCart }],
     queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
@@ -32,12 +30,9 @@ export default function Cart() {
       refetch()
     }
   })
-  const buyProductsMutation = useMutation({
-    mutationFn: purchaseApi.buyProducts,
-    onSuccess: (data: any) => {
-      setDataAddress(data.data.data)
-    }
-  })
+  // const buyProductsMutation = useMutation({
+  //   mutationFn: purchaseApi.buyProducts
+  // })
   const deletePurchasesMutation = useMutation({
     mutationFn: purchaseApi.deletePurchase,
     onSuccess: () => {
@@ -45,8 +40,8 @@ export default function Cart() {
     }
   })
   const location = useLocation()
-  const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
   const purchasesInCart = purchasesInCartData?.data.data
+  const choosenPurchaseIdFromLocation = (location.state as { purchaseId: string } | null)?.purchaseId
   const isAllChecked = useMemo(() => extendedPurchases.every((purchase) => purchase.checked), [extendedPurchases])
   const checkedPurchases = useMemo(() => extendedPurchases.filter((purchase) => purchase.checked), [extendedPurchases])
   const checkedPurchasesCount = checkedPurchases.length
@@ -129,222 +124,149 @@ export default function Cart() {
     deletePurchasesMutation.mutate([purchaseId])
   }
 
-  const handleDeleteManyPurchases = () => {
-    const purchasesIds = checkedPurchases.map((purchase) => purchase._id)
-    deletePurchasesMutation.mutate(purchasesIds)
-  }
-
-  const handleBuyPurchases = () => {
-    console.log('dataAddress', dataAddress)
-    if (checkedPurchases.length > 0) {
-      setIsModalVisible(true)
-      const body = checkedPurchases.map((purchase) => ({
-        product_id: purchase.product._id,
-        buy_count: purchase.buy_count
-      }))
-
-      buyProductsMutation.mutate(body, {
-        onSuccess: () => {
-          const checkedPurchaseIds = checkedPurchases.map((purchase) => purchase._id)
-          localStorage.setItem('checkedPurchaseIds', JSON.stringify(checkedPurchaseIds))
-        }
-      })
-    }
-  }
-  useEffect(() => {
-    if (shouldRefetch) {
-      setShouldRefetch(false) // Đặt shouldRefetch lại sau khi fetchData đã được gọi
-    }
-  }, [shouldRefetch])
-
-  const handleCancel = () => {
-    setIsModalVisible(false)
-  }
-  // const id = dataAddress.length > 0 ? dataAddress[0]._id : ''
+  console.log(purchasesInCartData)
+  console.log(extendedPurchases)
   return (
-    <div className='bg-neutral-100 py-16 '>
-      <div className='container mx-32 p-5'>
-        {extendedPurchases.length > 0 ? (
-          <>
-            <div className='overflow-auto'>
-              <div className='min-w-[1000px]'>
-                <div className='grid grid-cols-12 rounded-sm bg-white py-5 px-9 text-sm capitalize text-gray-500 shadow'>
-                  <div className='col-span-6'>
-                    <div className='flex items-center'>
-                      <div className='flex flex-shrink-0 items-center justify-center pr-3'>
-                        <input
-                          type='checkbox'
-                          className='h-5 w-5 accent-[#1CA7EC]'
-                          checked={isAllChecked}
-                          onChange={handleCheckAll}
-                        />
-                      </div>
-                      <div className='flex-grow text-black'>{t('Product')}</div>
-                    </div>
-                  </div>
-                  <div className='col-span-6'>
-                    <div className='grid grid-cols-5 text-center'>
-                      <div className='col-span-2'>{t('price')}</div>
-                      <div className='col-span-1'>{t('qauntity')}</div>
-                      <div className='col-span-1'>{t('total')}</div>
-                      <div className='col-span-1'>{t('action')}</div>
-                    </div>
-                  </div>
-                </div>
-                {extendedPurchases.length > 0 && (
-                  <div className='my-3 rounded-sm bg-white p-5 shadow'>
-                    {extendedPurchases.map((purchase, index) => (
-                      <div
-                        key={purchase._id}
-                        className='mb-5 grid grid-cols-12 items-center rounded-sm border border-gray-200 bg-white py-5 px-4 text-center text-sm text-gray-500 first:mt-0'
-                      >
-                        <div className='col-span-6'>
-                          <div className='flex'>
-                            <div className='flex flex-shrink-0 items-center justify-center pr-3'>
-                              <input
-                                type='checkbox'
-                                className='h-5 w-5 accent-[#1CA7EC]'
-                                checked={purchase.checked}
-                                onChange={handleCheck(index)}
-                              />
-                            </div>
-                            <div className='flex-grow'>
-                              <div className='flex'>
-                                <Link
-                                  className='h-20 w-20 flex-shrink-0'
-                                  to={`${path.home}${generateNameId({
-                                    name: purchase.product.name,
-                                    id: purchase.product._id
-                                  })}`}
-                                >
-                                  <img alt={purchase.product.name} src={purchase.product.image} />
-                                </Link>
-                                <div className='flex-grow px-2 pt-1 pb-2'>
-                                  <Link
-                                    to={`${path.home}${generateNameId({
-                                      name: purchase.product.name,
-                                      id: purchase.product._id
-                                    })}`}
-                                    className='text-left line-clamp-2'
-                                  >
-                                    {purchase.product.name}
-                                  </Link>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='col-span-6'>
-                          <div className='grid grid-cols-5 items-center'>
-                            <div className='col-span-2'>
-                              <div className='flex items-center justify-center'>
-                                <span className='text-gray-300 line-through'>
-                                  ₫{formatCurrency(purchase.product.price_before_discount)}
-                                </span>
-                                <span className='ml-3'>₫{formatCurrency(purchase.product.price)}</span>
-                              </div>
-                            </div>
-                            <div className='col-span-1'>
-                              <QuantityController
-                                max={purchase.product.quantity}
-                                value={purchase.buy_count}
-                                classNameWrapper='flex items-center'
-                                onIncrease={(value) => handleQuantity(index, value, value <= purchase.product.quantity)}
-                                onDecrease={(value) => handleQuantity(index, value, value >= 1)}
-                                onType={handleTypeQuantity(index)}
-                                onFocusOut={(value) =>
-                                  handleQuantity(
-                                    index,
-                                    value,
-                                    value >= 1 &&
-                                      value <= purchase.product.quantity &&
-                                      value !== (purchasesInCart as Purchase[])[index].buy_count
-                                  )
-                                }
-                                disabled={purchase.disabled}
-                              />
-                            </div>
-                            <div className='col-span-1'>
-                              <span className='text-[#1CA7EC]'>
-                                ₫{formatCurrency(purchase.product.price * purchase.buy_count)}
-                              </span>
-                            </div>
-                            <div className='col-span-1'>
-                              <button
-                                onClick={handleDelete(index)}
-                                className='bg-none text-black transition-colors hover:text-[#1CA7EC]'
-                              >
-                                {t('delete')}
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className='sticky bottom-0 z-10 mt-8 flex flex-col rounded-sm border border-gray-100 bg-white p-5 shadow sm:flex-row sm:items-center'>
-              <div className='flex items-center'>
-                <div className='flex flex-shrink-0 items-center justify-center pr-3'>
-                  <input
-                    type='checkbox'
-                    className='h-5 w-5 accent-[#1CA7EC]'
-                    checked={isAllChecked}
-                    onChange={handleCheckAll}
-                  />
-                </div>
-                <button className='mx-3 border-none bg-none' onClick={handleCheckAll}>
-                  {t('all')}({extendedPurchases.length})
-                </button>
-                <button className='mx-3 border-none bg-none' onClick={handleDeleteManyPurchases}>
-                  {t('delete')}
-                </button>
-              </div>
+    <section className='flex flex-col my-4 mx-16 font '>
+      <Breadcrumb
+        separator='>'
+        items={[
+          {
+            title: <Link to={path.home}>Trang chủ</Link>
+          },
+          {
+            title: <Link to={path.cart}>Trang giỏ hàng</Link>
+          }
+        ]}
+        className='pl-[22px]'
+      ></Breadcrumb>
+      <div className='text-[21px] pl-[22px] font-bold text-gray-700 w-[750px] '>Trang giỏ hàng của bạn</div>
+      <div className='cart-table flex items-start justify-between '>
+        <div className=' product-list max-h-[680px] overflow-y-auto border-2 border-gray-100 rounded-lg scrollable-container'>
+          <div className='cart-table-section  '>
+            <table className='table-shop'>
+              <thead>
+                <tr className='font-medium '>
+                  <th className='p-0'>
+                    <Switch checked={isAllChecked} onChange={handleCheckAll} />
+                  </th>
+                  <th className='pr-0 w-[40%]'>Product Name</th>
+                  <th className='px-0 ml-5  w-[15%] text-center '>Price</th>
 
-              <div className='mt-5 flex flex-col sm:ml-auto sm:mt-0 sm:flex-row sm:items-center'>
-                <div>
-                  <div className='flex items-center sm:justify-end'>
-                    <div>
-                      {' '}
-                      {t('payment')} ({checkedPurchasesCount} {t('products')}):
-                    </div>
-                    <div className='ml-2 text-2xl text-[#1CA7EC]'>₫{formatCurrency(totalCheckedPurchasePrice)}</div>
-                  </div>
-                  <div className='flex items-center text-sm sm:justify-end'>
-                    <div className='text-gray-500'> {t('save')}</div>
-                    <div className='ml-6 text-[#1CA7EC]'>₫{formatCurrency(totalCheckedPurchaseSavingPrice)}</div>
-                  </div>
-                </div>
-                <Button
-                  className='mt-5 flex h-10 w-52 items-center justify-center  bg-gradient-to-b from-[#4ADEDE] to-[#1CA7EC] text-white  text-sm uppercase  hover:opacity-90 sm:ml-4 sm:mt-0'
-                  onClick={handleBuyPurchases}
-                  disabled={buyProductsMutation.isLoading}
-                >
-                  {t('buy')}
-                </Button>
-                <Modal title='Thanh toán' open={isModalVisible} onCancel={handleCancel} footer={null}>
-                  <Payment /> {/* Thay thế bằng nội dung modal của bạn */}
-                </Modal>
+                  <th className=' px-0 ml-3  w-[10%] text-center'>Quantity</th>
+                  <th className='ml-3  px-0 w-[15%] text-center'>Total</th>
+                  <th className='ml-3  px-0 w-[11%] text-center'>Remaining</th>
+                </tr>
+              </thead>
+              {extendedPurchases.map((purchase, index) => (
+                <tbody key={purchase._id}>
+                  <tr>
+                    <td className='p-0 text-center'>
+                      <input type='checkbox' checked={purchase.checked} onChange={handleCheck(index)}></input>
+                    </td>
+                    <td className='w-[40%] pr-0'>
+                      <div className='flex flex-row items-center gap-x-[10px]'>
+                        <div className='relative'>
+                          <img
+                            src={purchase.product.image}
+                            alt=''
+                            width={200}
+                            height={200}
+                            className='item-img max-w-[80px] object-cover'
+                          />
+                          <button className='absolute top-[-10px] right-[-6px] z-40' onClick={handleDelete(index)}>
+                            <i className='fa fa-times' aria-hidden='true'></i>
+                          </button>
+                        </div>
+                        <Link
+                          to={`${path.home}${generateNameId({
+                            name: purchase.product.name,
+                            id: purchase.product._id
+                          })}`}
+                        >
+                          <span className='pr-0 w-[full%]'>{purchase.product.name}</span>
+                        </Link>
+                      </div>
+                    </td>
+                    <td className='p-0 pl-6 '>
+                      <div className='flex items-center gap-x-[10px]'>
+                        <span className='line-through text-gray-400 '>
+                          {formatCurrency(purchase.product.price_before_discount)}
+                        </span>
+                        <span className='bg-clip-text text-transparent bg-gradient-to-r from-[#f0a80e] via-[#c43131] to-[#671f57] font-semibold'>
+                          {formatCurrency(purchase.product.price)}
+                        </span>
+                      </div>
+                    </td>
+                    {/* <td className="text-center price-amount amount">
+              </td> */}
+                    <td className='pl-[15px] quantity'>
+                      <QuantityController
+                        max={purchase.product.quantity}
+                        value={purchase.buy_count}
+                        onIncrease={(value) => handleQuantity(index, value, value <= purchase.product.quantity)}
+                        onDecrease={(value) => handleQuantity(index, value, value >= 1)}
+                        onType={handleTypeQuantity(index)}
+                        onFocusOut={(value) =>
+                          handleQuantity(
+                            index,
+                            value,
+                            value >= 1 &&
+                              value <= purchase.product.quantity &&
+                              value !== (purchasesInCart as Purchase[])[index].buy_count
+                          )
+                        }
+                        disabled={purchase.disabled}
+                        classNameWrapper='w-[30px] h-[30px]'
+                      />
+                    </td>
+                    <td className='p-0 pl-8'>
+                      <span className=''>{formatCurrency(purchase.product.price * purchase.buy_count)} vnd</span>
+                    </td>
+                    <td className='pr-12'>
+                      <span className='text-black'>{purchase.product.stockQuantity}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+          </div>
+        </div>
+        <div className=' cart-totals w-[28%] border border-gray-100 rounded-lg shadow-lg p-4'>
+          <div className=' h-[50px] m-3 text-[18px]'>
+            <h4 className='text-center'>Tổng tiển thanh toán</h4>
+          </div>
+          <div className='wd-cart-totals'>
+            <div className='cart-totals-inner'>
+              <table className='table-shop'>
+                <tbody>
+                  <tr className=''>
+                    <th>Số lượng sản phẩm</th>
+                    <td>
+                      <span className='bg-clip-text text-transparent bg-gradient-to-r from-[#f0a80e] via-[#c43131] to-[#671f57] font-semibold'>
+                        {checkedPurchasesCount}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr className=''>
+                    <th>Tổng tiền</th>
+                    <td>
+                      <span className='bg-clip-text text-transparent bg-gradient-to-r from-[#f0a80e] via-[#c43131] to-[#671f57] font-semibold'>
+                        {formatCurrency(totalCheckedPurchasePrice)}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className='wc-proceed-to-checkout'>
+                <button className='text-white checkout-button  bg-gradient-to-r from-[#f0a80e] via-[#c43131] to-[#671f57] font-semibold'>
+                  Thanh Toán Ngay
+                </button>
               </div>
-            </div>
-          </>
-        ) : (
-          <div className='text-center'>
-            <img src={noproduct} alt='no purchase' className='mx-auto h-24 w-24' />
-            <div className='mt-5 font-bold text-gray-400'>Giỏ hàng của bạn còn trống</div>
-            <div className='mt-5 text-center'>
-              <Link
-                to={path.home}
-                className=' rounded-sm bg-rose-400 px-10 py-2  uppercase text-white transition-all hover:bg-rose-400/80'
-              >
-                Mua ngay
-              </Link>
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </section>
   )
 }

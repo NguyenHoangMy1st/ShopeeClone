@@ -3,28 +3,24 @@ import { FaTwitter, FaFacebookF } from 'react-icons/fa'
 import { IoLogoGoogle } from 'react-icons/io'
 import { PiInstagramLogoBold } from 'react-icons/pi'
 import { IoLogoYoutube } from 'react-icons/io5'
-export default function Footer() {
+import 'src/Styles/Footer.scss'
+import logo from 'src/assets/logo.png'
+function Footer() {
   return (
-    <footer className='bg-gradient-to-r from-[#4ADEDE] to-[#1CA7EC] bg-center bg-no-repeat bg-cover'>
+    <footer className="bg-[url('https://bizweb.dktcdn.net/100/336/334/themes/939194/assets/bg_cosmetics.jpg?1706112573342')] bg-center bg-no-repeat bg-cover">
       <div className='grid place-items-center py-9 font'>
         <div className='p-[20px] mx-auto'>
-          <div className='flex gap-12 text-black'>
+          <div className='flex gap-12 text-white'>
             <div className='flex-grow-1 '>
-              <div className=' mb-6'>
+              <div className=' mb-4 mt-[-40px]'>
                 <Link to='/' className='logo-wrapper'>
-                  <img
-                    src='//bizweb.dktcdn.net/100/336/334/themes/939194/assets/logo_footer.png?1706112573342'
-                    alt='logo'
-                  />
+                  <img src={logo} alt='logo' className='w-[350px] h-[150px]' />
                 </Link>
               </div>
               <div className='mb-6'>
-                <h4 className='font-medium '>
-                  <span>
-                    Shop mỹ phẩm Cool Beauty
-                    <br />
-                    Làm đẹp trở nên dễ dàng hơn
-                  </span>
+                <h4 className=' flex flex-col gap-1 text-xl'>
+                  <span>Shop mỹ phẩm Cool Beauty</span>
+                  <span> Làm đẹp trở nên dễ dàng hơn</span>
                 </h4>
                 <div className='mt-3'>
                   <ul className='flex flex-col gap-3'>
@@ -43,31 +39,31 @@ export default function Footer() {
               </div>
             </div>
             <div className='flex-grow-1'>
-              <div className='flex  gap-2 text-black'>
+              <div className='flex  gap-2 text-white'>
                 <div className=''>
                   <h4 className='font-semibold'>
                     <Link to='/' className='uppercase '>
                       Hỗ trợ khách hàng
                     </Link>
                   </h4>
-                  <div className=' text-black mt-4' id='collapseListMenu01'>
-                    <ul className='flex flex-col gap-3 text-white '>
-                      <li className='li_menu hover:text-gray-200'>
+                  <div className=' text-white mt-4' id='collapseListMenu01'>
+                    <ul className='flex flex-col gap-3 text-gray-400 '>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/'>Trang chủ</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/gioi-thieu'>Giới thiệu</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/collections/all'>Sản phẩm</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/san-pham-hot'>Khuyến mãi hot</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/tin-tuc'>Tin tức</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/lien-he'>Liên hệ</Link>
                       </li>
                     </ul>
@@ -76,20 +72,20 @@ export default function Footer() {
               </div>
             </div>
             <div className='flex-grow-1'>
-              <div className='flex gap-2 text-black'>
+              <div className='flex gap-2 text-white'>
                 <div className=''>
                   <h4 className='uppercase mb-4 font-semibold'>
                     <Link to='/'>Chính sách</Link>
                   </h4>
                   <div className='text-white' id='collapseListMenu02'>
-                    <ul className='flex flex-col gap-3 text-white'>
-                      <li className='li_menu hover:text-gray-200'>
+                    <ul className='flex flex-col gap-3 text-gray-400'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/collections/all'>Chính sách đổi trả</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/san-pham-hot'>Chính sách vận chuyển</Link>
                       </li>
-                      <li className='li_menu hover:text-gray-200'>
+                      <li className='li_menu hover:text-rose-200'>
                         <Link to='/tin-tuc'>Chính sách bảo mật</Link>
                       </li>
                     </ul>
@@ -139,3 +135,5 @@ export default function Footer() {
     </footer>
   )
 }
+
+export default Footer
