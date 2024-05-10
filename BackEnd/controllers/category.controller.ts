@@ -77,23 +77,12 @@ const deleteCategory = async (req: Request, res: Response) => {
   }
 }
 
-const getBrands = async (req: Request, res: Response) => {
-  const { exclude } = req.query
-  let condition = exclude ? { _id: { $ne: exclude } } : {}
-  const brands = await BrandModel.find(condition).select({ __v: 0 }).lean()
-  const response = {
-    message: 'Lấy brands thành công',
-    data: brands,
-  }
-  return responseSuccess(res, response)
-}
 const categoryController = {
   addCategory,
   getCategory,
   getCategories,
   updateCategory,
   deleteCategory,
-  getBrands,
 }
 
 export default categoryController
