@@ -23,6 +23,7 @@ export default function ProductList() {
     keepPreviousData: true,
     staleTime: 3 * 60 * 1000
   })
+
   return (
     <div className='h-full flex flex-col font '>
       <div className=' min-h-32'>
@@ -135,7 +136,24 @@ export default function ProductList() {
           <div className='my-10 mx-28 w-5/6'>
             <div className='flex flex-col gap-2 items-center justify-center '>
               <div className='text-center text-2xl font-semibold uppercase mt-6 '>top sản phẩm bán chạy</div>
-              <ProductTop data={productsData.data.data.products}></ProductTop>
+              <ProductTop data={productsData.data.data.products} name='sold'></ProductTop>
+              <Link
+                to={path.filterProduct}
+                className='text-gray-600 bg-white border-2 border-gray-600 rounded-full px-6 py-2 font-bold hover:border-rose-700 hover:text-rose-700'
+                onClick={() => {
+                  window.scrollTo(0, 0)
+                }}
+              >
+                Xem Tất Cả
+              </Link>
+            </div>
+          </div>
+        )}
+        {productsData && (
+          <div className='my-10 mx-28 w-5/6'>
+            <div className='flex flex-col gap-2 items-center justify-center '>
+              <div className='text-center text-2xl font-semibold uppercase mt-6 '>top sản phẩm được quan tâm</div>
+              <ProductTop data={productsData.data.data.products} name='view'></ProductTop>
               <Link
                 to={path.filterProduct}
                 className='text-gray-600 bg-white border-2 border-gray-600 rounded-full px-6 py-2 font-bold hover:border-rose-700 hover:text-rose-700'

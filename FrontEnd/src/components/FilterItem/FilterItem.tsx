@@ -3,26 +3,37 @@ import 'src/Styles/Header.scss'
 import Checkbox from '../Checkbox'
 import CheckBoxBrand from '../CheckBoxBrand'
 import CheckBoxCategory from '../CheckBoxCategory'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import categoryApi from 'src/apis/category.api'
+import { useQuery } from 'react-query'
 
 interface Props {
   index: number
   label: string
 }
+
 export default function FilterItem({ index, label }: Props) {
+  const queryConfig = useQueryConfig()
+  const { data: categoriesData } = useQuery({
+    queryKey: ['categories'],
+    queryFn: () => {
+      return categoryApi.getCategories()
+    }
+  })
   const generateChildren = (index: number) => {
     switch (index) {
       case 1:
-        return <Checkbox />
+        return <Checkbox queryConfig={queryConfig} />
       case 2:
         return (
           <div>
-            <CheckBoxCategory />
+            <CheckBoxCategory queryConfig={queryConfig} categories={categoriesData?.data.data || []} />
           </div>
         )
       default:
         return (
           <div>
-            <CheckBoxBrand />
+            <CheckBoxBrand queryConfig={queryConfig} categories={categoriesData?.data.data || []} />
           </div>
         )
     }
@@ -44,7 +55,7 @@ export default function FilterItem({ index, label }: Props) {
         fontFamily: 'Montserrat',
         fontSize: 18,
         headerPadding: '12px 2px',
-        contentPadding: '10px 2px'
+        contentPadding: '8px 2px'
       }
     }
   }

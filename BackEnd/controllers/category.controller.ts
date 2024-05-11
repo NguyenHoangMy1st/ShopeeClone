@@ -2,7 +2,6 @@ import { Request, Response } from 'express'
 import { responseSuccess, ErrorHandler } from '../utils/response'
 import { STATUS } from '../constants/status'
 import { CategoryModel } from '../database/models/category.model'
-import { BrandModel } from '../database/models/brand.model'
 
 const addCategory = async (req: Request, res: Response) => {
   const name: string = req.body.name

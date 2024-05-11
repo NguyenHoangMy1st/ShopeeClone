@@ -73,7 +73,7 @@ export default function ItemTop({ products }: Props) {
               </div>
               <div className='flex gap-1 px-3 text-gray-300 items-center justify-center pb-1'>
                 <ProductRating rating={products.rating} />
-                <span className='text-black ml-2 text-sm'>(0)</span>
+                <span className='text-black ml-2 text-sm'>({products.sold})</span>
               </div>
             </div>
           </div>

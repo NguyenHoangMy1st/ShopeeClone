@@ -13,6 +13,9 @@ import styles from 'src/Styles/Login.module.scss'
 import path from 'src/constants/path'
 import authApi from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
+import { useGoogleLogin } from '@react-oauth/google'
+import { setAccessTokenToLS, setProfileToLS } from 'src/utils/auth'
+import axios from 'axios'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
@@ -30,15 +33,21 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: (body: FormData) => authApi.login(body)
   })
+
   const onSubmit = handleSubmit((data) => {
     loginMutation.mutate(data, {
       onSuccess: (data) => {
+        console.log(data)
         setIsAuthenticated(true)
         setProfile(data.data.data.user)
         toast.success('Đăng nhập thành công!', {
           autoClose: 1300 // Tự động đóng thông báo sau 2 giây
         })
-        navigate('/')
+        if (data.data.data.user.roles[0] === 'Admin') {
+          navigate('/admin/dashboard')
+        } else if (data.data.data.user.roles[0] === 'User') {
+          navigate('/')
+        }
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ErrorResponse<FormData>>(error)) {
@@ -57,6 +66,31 @@ export default function Login() {
         })
       }
     })
+  })
+
+  const handleLoginGoogle = useGoogleLogin({
+    onSuccess: async (data) => {
+      const res = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${data.access_token}`, {
+        headers: {
+          Authorization: `Bearer ${data.access_token}`,
+          Accept: 'application/json'
+        }
+      })
+
+      const result = await authApi.loginGoogle({
+        email: res?.data?.email,
+        name: res?.data?.name
+      })
+      console.log(result)
+      setAccessTokenToLS(result.data.data.access_token)
+      setProfileToLS(result.data.data.user)
+
+      toast.success('Đăng nhập thành công!', {
+        autoClose: 1300 // Tự động đóng thông báo sau 2 giây
+      })
+      navigate('/')
+      window.location.reload()
+    }
   })
 
   return (
@@ -105,20 +139,9 @@ export default function Login() {
                   <span className='uppercase text-slate-300 px-4 text'>Hoặc</span>
                   <div className='flex-1 h-px w-4/5 bg-slate-200'></div>
                 </div>
-                <div className='flex gap-x-5 mt-3'>
-                  <button className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105 '>
-                    <div>
-                      <svg xmlns='http://www.w3.org/2000/svg' height='25' width='25' viewBox='0 0 512 512'>
-                        <path
-                          fill='#2166de'
-                          d='M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H141.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H287V510.1C413.8 494.8 512 386.9 512 256h0z'
-                        />
-                      </svg>
-                    </div>
-                    <div>Facebook</div>
-                  </button>
-                  <button className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105'>
-                    <div>
+                <div className=' mt-3  w-full' onClick={() => handleLoginGoogle()}>
+                  <button className='flex  gap-x-2 items-center justify-center p-3 border border-gray-300 rounded-lg basis-1/2 shadow-md hover:scale-105 w-full'>
+                    <div className=''>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
                         height='25'

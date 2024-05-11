@@ -26,9 +26,9 @@ const getAllOrders = async (req: Request, res: Response) => {
 
   let orders: any = await PurchaseModel.find(condition)
     .populate({
-      path: 'product',
+      path: 'order',
       populate: {
-        path: 'category',
+        path: 'product',
       },
     })
     .sort({

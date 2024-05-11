@@ -1,10 +1,8 @@
-import { FC, useMemo } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Navigation, Pagination } from 'swiper'
 
 import 'swiper/swiper-bundle.css'
 import 'src/Styles/SwiperQuick.scss'
-import { Product } from 'src/types/product.type'
 
 interface Props {
   product: any

@@ -4,7 +4,10 @@ export interface Product {
   image: string
   images: string[]
   description: string
-  category: string[]
+  category: {
+    _id: string
+    name: string
+  }
   brand: string[]
   rating: number
   price: number

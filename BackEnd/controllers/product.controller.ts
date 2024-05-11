@@ -10,6 +10,7 @@ import { FOLDERS, FOLDER_UPLOAD, ROUTE_IMAGE } from '../constants/config'
 import fs from 'fs'
 import { omitBy } from 'lodash'
 import { ORDER, SORT_BY } from '../constants/product'
+import { DeletedProductModel } from '../database/models/deletedProduct.model'
 
 export const handleImageProduct = (product) => {
   if (product.image !== undefined && product.image !== '') {
@@ -52,11 +53,12 @@ const addProduct = async (req: Request, res: Response) => {
       price,
       price_before_discount,
       quantity,
-      uses,
+      stockQuantity,
       ingredient,
       status,
       madeIn,
     } = form
+
     const product = {
       name,
       description,
@@ -68,11 +70,11 @@ const addProduct = async (req: Request, res: Response) => {
       rating: 0,
       price_before_discount,
       quantity,
-      uses,
+      stockQuantity: stockQuantity || 0, // Thiết lập giá trị mặc định cho stockQuantity
       ingredient,
       sold: 0, // Giá trị mặc định cho sold
       view: 0, // Giá trị mặc định cho view
-      status: status || 'active', // Giá trị mặc định cho status
+      status: 1, // Giá trị mặc định cho status
       madeIn,
     }
     const productAdd = await new ProductModel(product).save()
@@ -85,10 +87,9 @@ const addProduct = async (req: Request, res: Response) => {
         },
       }),
     }
-    console.log(response)
+
     return responseSuccess(res, response)
   } catch (error) {
-    console.log(error)
     return responseError(res, 'Không thể tạo sản phẩm')
   }
 }
@@ -106,6 +107,7 @@ const getProducts = async (req: Request, res: Response) => {
     price_max,
     price_min,
     name,
+    status,
   } = req.query as {
     [key: string]: string | number
   }
@@ -113,6 +115,7 @@ const getProducts = async (req: Request, res: Response) => {
   page = Number(page)
   limit = Number(limit)
   let condition: any = {}
+
   if (category) {
     condition.category = category
   }
@@ -147,6 +150,10 @@ const getProducts = async (req: Request, res: Response) => {
       $options: 'i',
     }
   }
+  if (status) {
+    condition.status = status
+  }
+  console.log(condition)
   let [products, totalProducts]: [products: any, totalProducts: any] =
     await Promise.all([
       ProductModel.find(condition)
@@ -227,9 +234,7 @@ const updateProduct = async (req: Request, res: Response) => {
     price,
     price_before_discount,
     quantity,
-    uses,
     ingredient,
-    status,
     madeIn,
   } = form
   const product = omitBy(
@@ -242,9 +247,7 @@ const updateProduct = async (req: Request, res: Response) => {
       price,
       price_before_discount,
       quantity,
-      uses,
       ingredient,
-      status,
       madeIn,
     },
     (value) => value === undefined || value === ''
@@ -272,25 +275,15 @@ const updateProduct = async (req: Request, res: Response) => {
 const deleteProduct = async (req: Request, res: Response) => {
   try {
     const product_id = req.params.product_id
-    const productDB: any = await ProductModel.findByIdAndDelete(
-      product_id
+    const productDB: any = await ProductModel.findByIdAndUpdate(
+      product_id,
+      { status: 0 },
+      { new: true } // this option ensures that the updated document is returned
     ).lean()
     if (productDB) {
-      // Tạo bản ghi cho lịch sử xóa
-
-      productDB.quantity = 0
-
-      // const deletedProduct = new DeletedProductModel(productDB)
-      // await deletedProduct.save()
-
-      // Xóa sản phẩm khỏi danh sách sản phẩm
-      await ProductModel.findByIdAndDelete(product_id).lean()
-
-      // Xóa ảnh liên quan
-
       return responseSuccess(res, {
         message: 'Xóa thành công',
-        // data: deletedProduct,
+        data: productDB,
       })
     } else {
       throw new ErrorHandler(STATUS.NOT_FOUND, 'Không tìm thấy sản phẩm')
@@ -328,24 +321,6 @@ const deleteQuantityProducts = async (req: Request, res: Response) => {
   })
 }
 
-const getDeletedProduct = async (req: Request, res: Response) => {
-  try {
-    // Lấy tất cả các sản phẩm đã xóa
-    // const deletedProducts = await DeletedProductModel.find().lean()
-
-    // Xử lý các sản phẩm và trả về phản hồi thành công
-    // const processedProducts = deletedProducts.map((product) =>
-    //   handleImageProduct(product)
-    // )
-    return responseSuccess(res, {
-      message: 'Lấy tất cả sản phẩm đã xóa thành công',
-      // data: processedProducts,
-    })
-  } catch (error) {
-    // Trả về phản hồi lỗi nếu có lỗi xảy ra
-    return responseError(res, 'Lỗi khi lấy tất cả sản phẩm đã xóa')
-  }
-}
 const searchProduct = async (req: Request, res: Response) => {
   let { searchText }: { [key: string]: string | any } = req.query
   searchText = decodeURI(searchText)

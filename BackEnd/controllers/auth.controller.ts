@@ -29,7 +29,7 @@ const registerController = async (req: Request, res: Response) => {
   const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire(req)
   const body: Register = req.body
   const { email, password } = body
-  const userInDB = await UserModel.findOne({ email: email }).exec()
+  const userInDB = await UserModel.findOne({ email: email, type: 0 }).exec()
   if (!userInDB) {
     const hashedPassword = hashValue(password)
     const user = {
@@ -135,6 +135,72 @@ const loginController = async (req: Request, res: Response) => {
   }
 }
 
+const loginGoogleController = async (req: Request, res: Response) => {
+  const { expireAccessTokenConfig, expireRefreshTokenConfig } = getExpire(req)
+  const body: any = req.body
+
+  const { email, name } = body
+  try {
+    const existUser: any = await UserModel.findOne({
+      email: email,
+      type: 1,
+    }).lean()
+
+    if (!existUser) {
+      await UserModel.create({
+        email: email,
+        name: name,
+        type: 1,
+      })
+    }
+
+    const userInDB: any = await UserModel.findOne({
+      email: email,
+      type: 1,
+    }).lean()
+
+    let payloadJWT: PayloadToken = {
+      id: userInDB._id,
+      email: userInDB.email,
+      roles: userInDB.roles,
+      created_at: new Date().toISOString(),
+    }
+    const access_token = await signToken(
+      payloadJWT,
+      config.SECRET_KEY,
+      expireAccessTokenConfig
+    )
+
+    const refresh_token = await signToken(
+      payloadJWT,
+      config.SECRET_KEY,
+      expireRefreshTokenConfig
+    )
+
+    await new AccessTokenModel({
+      user_id: userInDB._id,
+      token: access_token,
+    }).save()
+    await new RefreshTokenModel({
+      user_id: userInDB._id,
+      token: refresh_token,
+    }).save()
+    const response = {
+      message: 'Đăng nhập thành công',
+      data: {
+        access_token: 'Bearer ' + access_token,
+        expires: expireAccessTokenConfig,
+        refresh_token,
+        expires_refresh_token: expireRefreshTokenConfig,
+        user: omit(userInDB, ['password']),
+      },
+    }
+    return responseSuccess(res, response)
+  } catch (error) {
+    throw error
+  }
+}
+
 const refreshTokenController = async (req: Request, res: Response) => {
   const { expireAccessTokenConfig } = getExpire(req)
   const userDB: any = await UserModel.findById(req.jwtDecoded.id).lean()
@@ -175,6 +241,7 @@ const authController = {
   registerController,
   loginController,
   logoutController,
+  loginGoogleController,
   refreshTokenController,
 }
 

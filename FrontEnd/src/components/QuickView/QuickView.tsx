@@ -16,7 +16,7 @@ interface Props {
   product: any
 }
 export default function QuickView({ product }: Props) {
-  const [buyCount, setBuyCount] = useState(1)
+  const [buyCount] = useState(1)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const addToCartMutation = useMutation(purchaseApi.addToCart)

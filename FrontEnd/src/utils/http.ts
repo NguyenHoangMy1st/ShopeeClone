@@ -18,6 +18,7 @@ class Http {
         'Content-Type': 'application/json'
       }
     })
+
     this.instance.interceptors.request.use(
       (config) => {
         if (this.accessToken && config.headers) {

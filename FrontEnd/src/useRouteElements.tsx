@@ -16,6 +16,15 @@ import UserLayout from './layouts/UserLayout'
 import Profile from './pages/User/Profile'
 import ChangePassword from './pages/User/ChangePassword'
 import HistoryPuchase from './pages/User/HistoryPurchase'
+import LayoutAdmin from './pages/Admin/layouts/LayoutAdmin'
+import Dashboard from './pages/Admin/pages/Dashboard'
+import Accounts from './pages/Admin/pages/Accounts'
+import Products from './pages/Admin/pages/Products'
+import Orders from './pages/Admin/pages/Orders'
+import AdminLayout from './layouts/AdminLayout/AdminLayout'
+import AdminProfile from './pages/Admin/pages/AdminProfile'
+import FormAI from './pages/User/FormAI'
+import FilterBrand from './pages/FIlterProduct/FilterBrand'
 
 function ProtectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
@@ -25,7 +34,11 @@ function RejectedRoute() {
   const { isAuthenticated } = useContext(AppContext)
   return !isAuthenticated ? <Outlet /> : <Navigate to='/' />
 }
-
+function AdminProtectedRoute() {
+  const { isAuthenticated, user } = useContext(AppContext)
+  // console.log(user)
+  return isAuthenticated && user && user.roles.includes('Admin') ? <Outlet /> : <Navigate to='/login' />
+}
 export default function useRouteElements() {
   const routeElements = useRoutes([
     {
@@ -78,6 +91,15 @@ export default function useRouteElements() {
       )
     },
     {
+      path: path.filterBrand,
+      index: true,
+      element: (
+        <HomeLayout>
+          <FilterBrand />
+        </HomeLayout>
+      )
+    },
+    {
       path: path.productDetail,
       index: true,
       element: (
@@ -118,6 +140,46 @@ export default function useRouteElements() {
             {
               path: path.hitoryPurchase,
               element: <HistoryPuchase />
+            },
+            {
+              path: path.AIform,
+              element: <FormAI />
+            }
+          ]
+        }
+      ]
+    },
+    {
+      path: '',
+      element: <AdminProtectedRoute />,
+      children: [
+        {
+          path: path.admin,
+          element: (
+            <AdminLayout>
+              <LayoutAdmin />
+            </AdminLayout>
+          ),
+          children: [
+            {
+              path: path.dashboard,
+              element: <Dashboard />
+            },
+            {
+              path: path.adminProfile,
+              element: <AdminProfile />
+            },
+            {
+              path: path.accounts,
+              element: <Accounts />
+            },
+            {
+              path: path.products,
+              element: <Products />
+            },
+            {
+              path: path.orders,
+              element: <Orders />
             }
           ]
         }

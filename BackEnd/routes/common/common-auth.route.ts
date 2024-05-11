@@ -18,6 +18,12 @@ commonAuthRouter.post(
   authMiddleware.verifyAccessToken,
   wrapAsync(authController.logoutController)
 )
+commonAuthRouter.post(
+  '/login/google',
+  // authMiddleware.loginRules(),
+  helpersMiddleware.entityValidator,
+  wrapAsync(authController.loginGoogleController)
+)
 
 commonAuthRouter.post(
   '/register',
